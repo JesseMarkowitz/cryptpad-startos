@@ -19,6 +19,8 @@ export default {
     8: 'URL',
     9: 'Establecer URL principal',
     10: 'Elige qué URL servirá CryptPad como aplicación principal. Esta es la URL que los usuarios abren en su navegador. CryptPad no se iniciará hasta que se establezcan tanto la URL principal como la URL del sandbox.',
+    11: 'Establecer URL del sandbox',
+    12: 'Elige qué URL usará CryptPad como origen del iframe del sandbox. Debe ser un nombre de host diferente al de la URL principal: el navegador usa la diferencia de origen para hacer cumplir el aislamiento del sandbox alrededor del renderizado de documentos.',
   },
   de_DE: {
     0: 'CryptPad wird gestartet',
@@ -32,6 +34,8 @@ export default {
     8: 'URL',
     9: 'Haupt-URL festlegen',
     10: 'Wähle, welche URL CryptPad als Hauptanwendung bereitstellen soll. Dies ist die URL, die Benutzer in ihrem Browser öffnen. CryptPad startet erst, wenn sowohl die Haupt-URL als auch die Sandbox-URL gesetzt sind.',
+    11: 'Sandbox-URL festlegen',
+    12: 'Wähle, welche URL CryptPad als Sandbox-iframe-Origin verwenden soll. Dies muss ein anderer Hostname als die Haupt-URL sein — der Browser nutzt den Origin-Unterschied, um die Sandbox-Isolation rund um das Dokumenten-Rendering durchzusetzen.',
   },
   pl_PL: {
     0: 'Uruchamianie CryptPad',
@@ -45,6 +49,8 @@ export default {
     8: 'URL',
     9: 'Ustaw główny URL',
     10: 'Wybierz, który URL CryptPad ma serwować jako główną aplikację. To jest URL, który użytkownicy otwierają w przeglądarce. CryptPad nie uruchomi się, dopóki nie zostaną ustawione zarówno główny URL, jak i URL sandboxa.',
+    11: 'Ustaw URL sandboxa',
+    12: 'Wybierz, który URL CryptPad ma używać jako pochodzenie iframe sandboxa. Musi to być inna nazwa hosta niż główny URL — przeglądarka wykorzystuje różnicę pochodzenia do egzekwowania izolacji sandboxa wokół renderowania dokumentów.',
   },
   fr_FR: {
     0: 'Démarrage de CryptPad',
@@ -58,5 +64,7 @@ export default {
     8: 'URL',
     9: "Définir l'URL principale",
     10: "Choisissez quelle URL CryptPad doit servir en tant qu'application principale. C'est l'URL que les utilisateurs ouvrent dans leur navigateur. CryptPad ne démarrera pas tant que l'URL principale et l'URL du bac à sable ne sont pas définies.",
+    11: "Définir l'URL du bac à sable",
+    12: "Choisissez quelle URL CryptPad doit utiliser comme origine d'iframe du bac à sable. Ce doit être un nom d'hôte différent de l'URL principale — le navigateur utilise la différence d'origine pour appliquer l'isolation du bac à sable autour du rendu des documents.",
   },
 } satisfies Record<string, LangDict>

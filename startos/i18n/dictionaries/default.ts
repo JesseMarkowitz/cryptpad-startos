@@ -17,6 +17,10 @@ const dict = {
   URL: 8,
   'Set Main URL': 9,
   'Choose which URL CryptPad should serve as its main app. This is the URL users open in their browser. CryptPad will not start until both Main URL and Sandbox URL are set.': 10,
+
+  // actions/setSandboxUrl.ts
+  'Set Sandbox URL': 11,
+  'Choose which URL CryptPad should use as its sandbox iframe origin. This must be a different hostname from the Main URL — the browser uses the origin difference to enforce sandbox isolation around document rendering.': 12,
 } as const
 
 /**
