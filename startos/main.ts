@@ -2,40 +2,35 @@ import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { uiPort } from './utils'
 
+/**
+ * NOTE: This is a placeholder skeleton kept compileable during the foundation
+ * commit. The full setupMain — config.js generation, mounts, daemon-start
+ * gate — lands in the dedicated "Main" commit (PLAN §8). Until then, the
+ * service still starts using the upstream image's defaults so each commit
+ * leaves a buildable state.
+ */
 export const main = sdk.setupMain(async ({ effects }) => {
-  /**
-   * ======================== Setup (optional) ========================
-   *
-   * In this section, we fetch any resources or run any desired preliminary commands.
-   */
-  console.info(i18n('Starting Hello World!'))
+  console.info(i18n('Starting CryptPad'))
 
-  /**
-   * ======================== Daemons ========================
-   *
-   * In this section, we create one or more daemons that define the service runtime.
-   *
-   * Each daemon defines its own health check, which can optionally be exposed to the user.
-   */
   return sdk.Daemons.of(effects).addDaemon('primary', {
     subcontainer: await sdk.SubContainer.of(
       effects,
-      { imageId: 'hello-world' },
+      { imageId: 'cryptpad' },
       sdk.Mounts.of().mountVolume({
         volumeId: 'main',
         subpath: null,
         mountpoint: '/data',
         readonly: false,
       }),
-      'hello-world-sub',
+      'cryptpad-sub',
     ),
-    exec: { command: ['hello-world'] },
+    exec: { command: sdk.useEntrypoint() },
     ready: {
       display: i18n('Web Interface'),
       fn: () =>
         sdk.healthCheck.checkPortListening(effects, uiPort, {
-          successMessage: i18n('The web interface is ready'),
-          errorMessage: i18n('The web interface is not ready'),
+          successMessage: i18n('CryptPad is ready'),
+          errorMessage: i18n('CryptPad is not ready'),
         }),
     },
     requires: [],

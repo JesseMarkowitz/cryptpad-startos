@@ -6,3 +6,7 @@ node_modules/
 docker-images
 javascript
 ncc-cache
+
+# Bun is sometimes used for fast local iteration; the canonical lockfile is
+# package-lock.json so the s9pk.mk's npm ci stays authoritative.
+bun.lock
