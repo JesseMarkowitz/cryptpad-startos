@@ -21,6 +21,14 @@ const dict = {
   // actions/setSandboxUrl.ts
   'Set Sandbox URL': 11,
   'Choose which URL CryptPad should use as its sandbox iframe origin. This must be a different hostname from the Main URL — the browser uses the origin difference to enforce sandbox isolation around document rendering.': 12,
+
+  // actions/showSetupTokenUrl.ts
+  'Show Setup Token URL': 13,
+  'Open this URL in a browser to create your CryptPad administrator account. The URL is single-use — once you complete the wizard, it is no longer valid.': 14,
+  "The CryptPad daemon hasn't bootstrapped yet. Wait ~30 seconds and retry.": 15,
+  'Setup is already complete — your administrator account exists. Use the /admin/ panel for further configuration.': 16,
+  'CryptPad Setup URL': 17,
+  'Open this URL in a browser to create your administrator account.': 18,
 } as const
 
 /**
