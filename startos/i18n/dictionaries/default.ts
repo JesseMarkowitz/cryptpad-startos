@@ -29,6 +29,12 @@ const dict = {
   'Setup is already complete — your administrator account exists. Use the /admin/ panel for further configuration.': 16,
   'CryptPad Setup URL': 17,
   'Open this URL in a browser to create your administrator account.': 18,
+
+  // actions/addAdminKey.ts
+  'Administrator Public Keys': 19,
+  'Each row is one administrator. Accepts either a bare public signing key (e.g. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) OR the full profile-link format ([username@instance.example.com/CU6k...]). To remove an admin, delete its row and submit — the list is the new state, not a delta.': 20,
+  'Add Administrator by Public Key': 21,
+  "Add or remove CryptPad administrators by their public signing key. Submit an empty list to revoke all admin keys configured here (CryptPad's in-app /admin/ panel is unaffected — admins added through the install wizard or the in-app panel persist independently).": 22,
 } as const
 
 /**

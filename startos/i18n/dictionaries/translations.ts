@@ -27,6 +27,10 @@ export default {
     16: 'La configuración ya está completa: tu cuenta de administrador existe. Usa el panel /admin/ para configuración adicional.',
     17: 'URL de configuración de CryptPad',
     18: 'Abre esta URL en un navegador para crear tu cuenta de administrador.',
+    19: 'Claves públicas de administrador',
+    20: 'Cada fila es un administrador. Acepta una clave pública de firma directamente (p. ej. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) O el formato completo de enlace de perfil ([usuario@instancia.ejemplo.com/CU6k...]). Para eliminar un administrador, borra su fila y envía: la lista ES el nuevo estado, no un delta.',
+    21: 'Agregar administrador por clave pública',
+    22: 'Agrega o elimina administradores de CryptPad por su clave pública de firma. Envía una lista vacía para revocar todas las claves de administrador configuradas aquí (el panel /admin/ interno de CryptPad no se ve afectado: los administradores agregados a través del asistente de instalación o del panel interno persisten de forma independiente).',
   },
   de_DE: {
     0: 'CryptPad wird gestartet',
@@ -48,6 +52,10 @@ export default {
     16: 'Die Einrichtung ist bereits abgeschlossen — dein Administrator-Konto existiert. Nutze das /admin/-Panel für weitere Konfiguration.',
     17: 'CryptPad-Setup-URL',
     18: 'Öffne diese URL im Browser, um dein Administrator-Konto zu erstellen.',
+    19: 'Öffentliche Administrator-Schlüssel',
+    20: 'Jede Zeile ist ein Administrator. Akzeptiert entweder einen bloßen öffentlichen Signaturschlüssel (z. B. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) ODER das vollständige Profil-Link-Format ([benutzer@instanz.beispiel.de/CU6k...]). Um einen Administrator zu entfernen, lösche seine Zeile und sende ab — die Liste IST der neue Zustand, kein Delta.',
+    21: 'Administrator per öffentlichem Schlüssel hinzufügen',
+    22: "Administratoren über ihren öffentlichen Signaturschlüssel hinzufügen oder entfernen. Sende eine leere Liste, um alle hier konfigurierten Admin-Schlüssel zu widerrufen (CryptPads internes /admin/-Panel ist davon nicht betroffen — Administratoren, die über den Installations-Assistenten oder das interne Panel hinzugefügt wurden, bleiben unabhängig erhalten).",
   },
   pl_PL: {
     0: 'Uruchamianie CryptPad',
@@ -69,6 +77,10 @@ export default {
     16: 'Konfiguracja jest już ukończona — twoje konto administratora istnieje. Użyj panelu /admin/, aby dalej konfigurować instancję.',
     17: 'URL konfiguracji CryptPad',
     18: 'Otwórz ten URL w przeglądarce, aby utworzyć konto administratora.',
+    19: 'Klucze publiczne administratorów',
+    20: 'Każdy wiersz to jeden administrator. Akceptuje albo sam publiczny klucz podpisujący (np. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) ALBO pełny format linku profilu ([użytkownik@instancja.przykład.pl/CU6k...]). Aby usunąć administratora, usuń jego wiersz i prześlij — lista JEST nowym stanem, nie różnicą.',
+    21: 'Dodaj administratora po kluczu publicznym',
+    22: 'Dodaj lub usuń administratorów CryptPad po ich publicznym kluczu podpisującym. Prześlij pustą listę, aby unieważnić wszystkie tu skonfigurowane klucze administratorów (wewnętrzny panel /admin/ CryptPad nie jest tym dotknięty — administratorzy dodani przez kreatora instalacji lub przez panel wewnętrzny utrzymują się niezależnie).',
   },
   fr_FR: {
     0: 'Démarrage de CryptPad',
@@ -90,5 +102,9 @@ export default {
     16: "La configuration est déjà terminée — votre compte administrateur existe. Utilisez le panneau /admin/ pour la configuration supplémentaire.",
     17: 'URL de configuration de CryptPad',
     18: 'Ouvrez cette URL dans un navigateur pour créer votre compte administrateur.',
+    19: 'Clés publiques des administrateurs',
+    20: "Chaque ligne est un administrateur. Accepte soit une clé publique de signature brute (par ex. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) SOIT le format complet de lien de profil ([utilisateur@instance.exemple.com/CU6k...]). Pour supprimer un administrateur, supprimez sa ligne et soumettez — la liste EST le nouvel état, pas un delta.",
+    21: 'Ajouter un administrateur par clé publique',
+    22: "Ajouter ou supprimer des administrateurs CryptPad par leur clé publique de signature. Soumettez une liste vide pour révoquer toutes les clés d'administrateur configurées ici (le panneau /admin/ interne de CryptPad n'est pas affecté — les administrateurs ajoutés via l'assistant d'installation ou le panneau interne persistent indépendamment).",
   },
 } satisfies Record<string, LangDict>
