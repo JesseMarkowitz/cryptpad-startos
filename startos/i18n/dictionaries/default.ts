@@ -10,6 +10,8 @@ const dict = {
   // interfaces.ts
   'Web UI': 4,
   'The CryptPad collaborative editor': 5,
+  'Sandbox Origin': 6,
+  "Internal iframe origin for CryptPad's document sandbox. Loaded automatically by the main UI; not a user destination. Required separately so the browser sees a different origin and can enforce sandbox isolation via the same-origin policy.": 7,
 } as const
 
 /**
