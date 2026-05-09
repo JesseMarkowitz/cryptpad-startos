@@ -12,13 +12,33 @@
 
 FROM cryptpad/cryptpad:version-2026.2.2
 
-# The build-pipeline commit (PLAN §10) adds an OnlyOffice install layer here:
+# Bake OnlyOffice (Document / Sheet / Presentation editors) into the image
+# at build time so users don't pay a 10–15 minute first-start download.
 #
-#   USER root
-#   RUN ./install-onlyoffice.sh --accept-license --trust-repository
-#   USER cryptpad
+# install-onlyoffice.sh writes to TWO paths:
+#   - /cryptpad/www/common/onlyoffice/dist/   ← per-version assets, image rootfs
+#   - /cryptpad/onlyoffice-conf/              ← state, MUST be a volume mount
 #
-# This placeholder Dockerfile inherits the upstream image unchanged so each
-# commit leaves the package buildable. Without OnlyOffice baked in, the
-# Document / Sheet / Presentation editors are unavailable until the
-# build-pipeline commit lands.
+# Only `dist/` is baked here. `onlyoffice-conf/` is mounted from the StartOS
+# main volume at runtime (see startos/main.ts mountVolume); the install
+# script idempotently re-checks state on subsequent runs against the
+# onlyoffice.properties file in conf/.
+#
+# Flags (verified against install-onlyoffice.sh@v2026.2.2):
+#   --accept-license     — bypass the interactive license review
+#   --trust-repository   — git safe.directory for the cloned onlyoffice-builds
+#                          repo (the build runs as root which mismatches the
+#                          UID gitconfig would otherwise want)
+#
+# Build-time network deps: github.com (clones cryptpad/onlyoffice-builds
+# and the onlyoffice-editor / onlyoffice-x2t-wasm release archives), plus
+# raw.githubusercontent.com for the (license-header) curl. Documented in
+# README "Building from Source".
+USER root
+RUN ./install-onlyoffice.sh --accept-license --trust-repository
+
+# Restore the unprivileged runtime user (UID/GID 4001) the upstream
+# Dockerfile sets via `USER cryptpad`. CryptPad MUST run as 4001 — that's
+# what the volume's data files are owned by (see startos/main.ts ensureDir
+# + chown).
+USER cryptpad
