@@ -31,6 +31,10 @@ export default {
     20: 'Cada fila es un administrador. Acepta una clave pública de firma directamente (p. ej. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) O el formato completo de enlace de perfil ([usuario@instancia.ejemplo.com/CU6k...]). Para eliminar un administrador, borra su fila y envía: la lista ES el nuevo estado, no un delta.',
     21: 'Agregar administrador por clave pública',
     22: 'Agrega o elimina administradores de CryptPad por su clave pública de firma. Envía una lista vacía para revocar todas las claves de administrador configuradas aquí (el panel /admin/ interno de CryptPad no se ve afectado: los administradores agregados a través del asistente de instalación o del panel interno persisten de forma independiente).',
+    23: 'Ejecutar diagnóstico',
+    24: 'Abre la URL devuelta por esta acción en un navegador para ejecutar las pruebas de autodiagnóstico integradas de CryptPad. Úsala para verificar tu instalación o solucionar problemas. NOTA: algunas pruebas fallan a propósito hasta que actives la función correspondiente en /admin/; por ejemplo "support help-desk not initialized" y "embedding disabled" son funciones que el usuario activa, no errores de configuración.',
+    25: 'Diagnóstico de CryptPad',
+    26: 'Abre esta URL en un navegador para ejecutar el diagnóstico de CryptPad.',
   },
   de_DE: {
     0: 'CryptPad wird gestartet',
@@ -56,6 +60,10 @@ export default {
     20: 'Jede Zeile ist ein Administrator. Akzeptiert entweder einen bloßen öffentlichen Signaturschlüssel (z. B. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) ODER das vollständige Profil-Link-Format ([benutzer@instanz.beispiel.de/CU6k...]). Um einen Administrator zu entfernen, lösche seine Zeile und sende ab — die Liste IST der neue Zustand, kein Delta.',
     21: 'Administrator per öffentlichem Schlüssel hinzufügen',
     22: "Administratoren über ihren öffentlichen Signaturschlüssel hinzufügen oder entfernen. Sende eine leere Liste, um alle hier konfigurierten Admin-Schlüssel zu widerrufen (CryptPads internes /admin/-Panel ist davon nicht betroffen — Administratoren, die über den Installations-Assistenten oder das interne Panel hinzugefügt wurden, bleiben unabhängig erhalten).",
+    23: 'Diagnose ausführen',
+    24: 'Öffne die von dieser Aktion zurückgegebene URL im Browser, um CryptPads integrierte Selbsttests auszuführen. Damit kannst du deine Installation überprüfen oder Probleme diagnostizieren. HINWEIS: Einige Tests schlagen absichtlich fehl, bis du das entsprechende Feature in /admin/ aktivierst — zum Beispiel sind "support help-desk not initialized" und "embedding disabled" benutzeraktivierte Features, keine Konfigurationsfehler.',
+    25: 'CryptPad-Diagnose',
+    26: 'Öffne diese URL im Browser, um CryptPads Diagnose-Checkup auszuführen.',
   },
   pl_PL: {
     0: 'Uruchamianie CryptPad',
@@ -81,6 +89,10 @@ export default {
     20: 'Każdy wiersz to jeden administrator. Akceptuje albo sam publiczny klucz podpisujący (np. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) ALBO pełny format linku profilu ([użytkownik@instancja.przykład.pl/CU6k...]). Aby usunąć administratora, usuń jego wiersz i prześlij — lista JEST nowym stanem, nie różnicą.',
     21: 'Dodaj administratora po kluczu publicznym',
     22: 'Dodaj lub usuń administratorów CryptPad po ich publicznym kluczu podpisującym. Prześlij pustą listę, aby unieważnić wszystkie tu skonfigurowane klucze administratorów (wewnętrzny panel /admin/ CryptPad nie jest tym dotknięty — administratorzy dodani przez kreatora instalacji lub przez panel wewnętrzny utrzymują się niezależnie).',
+    23: 'Uruchom diagnostykę',
+    24: 'Otwórz URL zwrócony przez tę akcję w przeglądarce, aby uruchomić wbudowane testy autodiagnostyczne CryptPad. Użyj jej, aby zweryfikować instalację lub rozwiązywać problemy. UWAGA: niektóre testy nie przechodzą z założenia, dopóki nie włączysz odpowiedniej funkcji w /admin/ — np. "support help-desk not initialized" i "embedding disabled" są funkcjami włączanymi przez użytkownika, a nie błędami konfiguracji.',
+    25: 'Diagnostyka CryptPad',
+    26: 'Otwórz ten URL w przeglądarce, aby uruchomić diagnostykę CryptPad.',
   },
   fr_FR: {
     0: 'Démarrage de CryptPad',
@@ -106,5 +118,9 @@ export default {
     20: "Chaque ligne est un administrateur. Accepte soit une clé publique de signature brute (par ex. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) SOIT le format complet de lien de profil ([utilisateur@instance.exemple.com/CU6k...]). Pour supprimer un administrateur, supprimez sa ligne et soumettez — la liste EST le nouvel état, pas un delta.",
     21: 'Ajouter un administrateur par clé publique',
     22: "Ajouter ou supprimer des administrateurs CryptPad par leur clé publique de signature. Soumettez une liste vide pour révoquer toutes les clés d'administrateur configurées ici (le panneau /admin/ interne de CryptPad n'est pas affecté — les administrateurs ajoutés via l'assistant d'installation ou le panneau interne persistent indépendamment).",
+    23: 'Exécuter le diagnostic',
+    24: "Ouvrez l'URL retournée par cette action dans un navigateur pour exécuter les tests de diagnostic intégrés de CryptPad. Utilisez-le pour vérifier votre installation ou résoudre des problèmes. REMARQUE : certains tests échouent par conception tant que vous n'activez pas la fonctionnalité correspondante dans /admin/ — par exemple « support help-desk not initialized » et « embedding disabled » sont des fonctionnalités activables par l'utilisateur, pas des erreurs de configuration.",
+    25: 'Diagnostic CryptPad',
+    26: 'Ouvrez cette URL dans un navigateur pour exécuter le diagnostic de CryptPad.',
   },
 } satisfies Record<string, LangDict>

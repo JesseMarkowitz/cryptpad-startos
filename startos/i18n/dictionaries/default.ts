@@ -35,6 +35,12 @@ const dict = {
   'Each row is one administrator. Accepts either a bare public signing key (e.g. CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=) OR the full profile-link format ([username@instance.example.com/CU6k...]). To remove an admin, delete its row and submit — the list is the new state, not a delta.': 20,
   'Add Administrator by Public Key': 21,
   "Add or remove CryptPad administrators by their public signing key. Submit an empty list to revoke all admin keys configured here (CryptPad's in-app /admin/ panel is unaffected — admins added through the install wizard or the in-app panel persist independently).": 22,
+
+  // actions/runDiagnostics.ts
+  'Run Diagnostics': 23,
+  'Open the URL returned by this action in a browser to run CryptPad\'s built-in self-diagnostic tests. Use this to verify your install or troubleshoot. NOTE: some tests fail by design until you turn the corresponding feature on in /admin/ — for example "support help-desk not initialized" and "embedding disabled" are user-toggle features, not configuration errors.': 24,
+  'CryptPad Diagnostics': 25,
+  "Open this URL in a browser to run CryptPad's diagnostic checkup.": 26,
 } as const
 
 /**
