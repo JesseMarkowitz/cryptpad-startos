@@ -41,6 +41,13 @@ const dict = {
   'Open the URL returned by this action in a browser to run CryptPad\'s built-in self-diagnostic tests. Use this to verify your install or troubleshoot. NOTE: some tests fail by design until you turn the corresponding feature on in /admin/ — for example "support help-desk not initialized" and "embedding disabled" are user-toggle features, not configuration errors.': 24,
   'CryptPad Diagnostics': 25,
   "Open this URL in a browser to run CryptPad's diagnostic checkup.": 26,
+
+  // init/setup.ts (reactive watcher tasks)
+  'Choose the primary domain for the CryptPad UI.': 27,
+  'Your previously selected Main URL is no longer available. Pick a new one.': 28,
+  "Choose the sandbox domain for CryptPad's document iframe isolation.": 29,
+  'Your previously selected Sandbox URL is no longer available. Pick a new one.': 30,
+  'Open this URL once and complete the wizard to create your CryptPad administrator account.': 31,
 } as const
 
 /**
