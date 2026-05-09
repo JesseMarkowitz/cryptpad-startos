@@ -12,6 +12,11 @@ const dict = {
   'The CryptPad collaborative editor': 5,
   'Sandbox Origin': 6,
   "Internal iframe origin for CryptPad's document sandbox. Loaded automatically by the main UI; not a user destination. Required separately so the browser sees a different origin and can enforce sandbox isolation via the same-origin policy.": 7,
+
+  // actions/setMainUrl.ts
+  URL: 8,
+  'Set Main URL': 9,
+  'Choose which URL CryptPad should serve as its main app. This is the URL users open in their browser. CryptPad will not start until both Main URL and Sandbox URL are set.': 10,
 } as const
 
 /**
