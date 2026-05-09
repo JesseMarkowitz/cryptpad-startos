@@ -11,20 +11,29 @@ import { getMainUrls, getSandboxUrls } from '../utils'
  * Reactive watcher — runs on every init kind (no `kind` guard) and re-runs
  * whenever any of its `.const(effects)` reads change.
  *
- * Job: keep three critical tasks in sync with the world's state:
+ * Job: keep three tasks in sync with the world's state:
  *
- *   1. main-url-not-set / main-url-unavailable — fires until the user
- *      picks a Main URL that's currently reachable.
- *   2. sandbox-url-not-set / sandbox-url-unavailable — same shape for
- *      sandbox.
- *   3. setup-token-pending — fires once both URLs are set AND the daemon
- *      has emitted ADD_INSTALL_TOKEN; clears once the wizard is complete
- *      (decree consumed).
+ *   1. main-url-not-set / main-url-unavailable — 'critical'.
+ *      Fires until the user picks a Main URL that's currently reachable.
+ *   2. sandbox-url-not-set / sandbox-url-unavailable — 'critical'.
+ *      Same shape for sandbox.
+ *   3. setup-token-pending — 'important' (NOT 'critical'). Fires once both
+ *      URLs are set AND the daemon has emitted ADD_INSTALL_TOKEN; clears
+ *      once an admin exists in the decree log (which is what readSetupState
+ *      treats as 'done').
  *
- * Each task is 'critical' severity — per tasks.md, critical tasks BLOCK
- * the service from starting until the user completes them. That's the
- * daemon-start gate: with no Main URL or no Sandbox URL set, setupMain is
- * never invoked.
+ * The first two are 'critical' on purpose: setupMain throws if either URL
+ * is null, so the daemon literally cannot start without them. 'critical'
+ * severity blocks startup (per tasks.md) and aligns with that.
+ *
+ * The third is 'important' — NOT 'critical'. Earlier versions had it as
+ * 'critical' and that produced an unrecoverable deadlock: if the action
+ * was 'only-running' and the task never auto-cleared, stopping the service
+ * any time after first install would lock the user out. Even with the
+ * 'any'-availability action, leaving the task as 'critical' is wrong:
+ * once both URLs are set, the daemon CAN run, so blocking startup on a
+ * follow-up reminder is the wrong UX. 'important' surfaces the reminder
+ * prominently without gating startup.
  *
  * Modelled on vaultwarden-startos/startos/init/setup.ts and
  * ghost-startos/startos/init/taskSetPrimaryUrl.ts. Differences:
@@ -95,7 +104,7 @@ export const setup = sdk.setupOnInit(async (effects) => {
   if (store?.mainUrl && store?.sandboxUrl) {
     const state = await readSetupState()
     if (state.kind === 'pending') {
-      await sdk.action.createOwnTask(effects, showSetupTokenUrl, 'critical', {
+      await sdk.action.createOwnTask(effects, showSetupTokenUrl, 'important', {
         replayId: 'setup-token-pending',
         reason: i18n(
           'Open this URL once and complete the wizard to create your CryptPad administrator account.',

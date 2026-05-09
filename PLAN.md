@@ -711,7 +711,7 @@ Extract token from `/data/decrees/decree.ndjson`. Verified shape from `lib/api.j
 ["ADD_INSTALL_TOKEN", [token], "", +new Date()]
 ```
 
-NDJSON, one decree per line. The token is "live" if it appears with no subsequent matching `RM_INSTALL_TOKEN` (or equivalent removal) **for the same token value**. Research couldn't surface the exact removal decree shape from `lib/api.js` — I'm flagging this as a Phase-2 implementation detail to verify when we have a running CryptPad to inspect (the decree log will tell us). For the plan, the parser implements the conservative form: scan for the latest `ADD_INSTALL_TOKEN`; if a later decree with verb starting `RM_` references the same token, treat as consumed.
+NDJSON, one decree per line. *(Phase-2 update, 2026-05-09: there is no removal decree — see §13 question 2 resolution. Setup is "done" iff any `ADD_ADMIN_KEY` decree exists in the log. The implementation matches the resolved shape, not the speculative `RM_`-scan described in this section.)*
 
 Shared helper (used by both `setup.ts` and `showSetupTokenUrl`):
 
@@ -1036,7 +1036,7 @@ The brief listed four open questions; each is now resolved with a citation. Plus
 
 1. **`HealthReceipt.never` SDK construct** — the brief mentions this tentatively. I cannot confirm it exists from the local docs (`main.md` doesn't mention it) and the SDK source isn't installed in any local `node_modules` for me to grep. The plan currently uses a plain `throw new Error(...)` in `setupMain` (mirroring `vaultwarden-startos`). If the construct does exist and Jesse prefers it, it's a one-line swap during Phase 2.
 
-2. **`RM_INSTALL_TOKEN` decree shape** — research only confirmed the `ADD_INSTALL_TOKEN` shape from `lib/api.js`. The mirror "removal" decree's exact verb name and shape weren't visible in the file excerpts I fetched. The plan's `isSetupPending` parser uses a defensive scan (any verb starting `RM_` whose first arg matches the live token). Phase 2 should run a real CryptPad to disk-inspect the decree log after completing the install wizard, confirm the actual verb, and tighten the parser. If the verb is something other than `RM_INSTALL_TOKEN`, only the parser changes — no architectural shift.
+2. **`RM_INSTALL_TOKEN` decree shape** — RESOLVED IN PHASE 2 (sideload, 2026-05-09): there is no removal decree. CryptPad never removes the `ADD_INSTALL_TOKEN` line from the log; the log just stays append-only. The "setup is done" signal is the *presence of any `ADD_ADMIN_KEY` decree* (emitted by the install wizard or by the in-app `/admin/` panel adding admins), not a paired removal. `decrees.ts` was updated to scan for `ADD_ADMIN_KEY` instead of `RM_*`. The `setup-token-pending` task severity was simultaneously dropped from `'critical'` → `'important'` because the original combination produced an unrecoverable startup deadlock when the parser stayed permanently stuck in 'pending'.
 
 3. **First-character of admin keys** — CryptPad keys are normally URL-safe base64 (44 chars + `=`). Should the parser also strip whitespace inside the key, or is per-line trimming sufficient? Plan assumes per-line trim is enough; manual test case with surrounding whitespace will confirm.
 

@@ -12,13 +12,23 @@ export const showSetupTokenUrl = sdk.Action.withoutInput(
       'Open this URL in a browser to create your CryptPad administrator account. The URL is single-use — once you complete the wizard, it is no longer valid.',
     ),
     warning: null,
-    // The decree file only exists after the daemon has run at least once,
-    // so the action requires the service to be running.
-    allowedStatuses: 'only-running',
+    // 'any' — readable while the service is stopped. The action handler
+    // reads the decree log from the volume (sdk.volumes.main.subpath),
+    // which is accessible to the StartOS service-runtime regardless of
+    // whether the cryptpad container is running. If the daemon has never
+    // run, readSetupState() returns 'waiting-for-daemon' and the handler
+    // throws a clear "wait ~30 seconds and retry" message.
+    //
+    // 'only-running' would be wrong: combined with a sticky 'critical'
+    // setup-token task (the bug this fix removes) it produced an
+    // unrecoverable startup deadlock — the user couldn't start the service
+    // because of the task, and couldn't run the action because the service
+    // was stopped.
+    allowedStatuses: 'any',
     group: null,
-    // Hidden — surfaced via the 'setup-token-pending' critical task created
-    // by the watcher in init/setup.ts once both URLs are set and the
-    // ADD_INSTALL_TOKEN decree has appeared.
+    // Hidden — surfaced via the 'setup-token-pending' important task
+    // created by the watcher in init/setup.ts once both URLs are set and
+    // the ADD_INSTALL_TOKEN decree has appeared.
     visibility: 'hidden',
   }),
 
@@ -42,9 +52,12 @@ export const showSetupTokenUrl = sdk.Action.withoutInput(
       )
     }
 
-    // Belt-and-suspenders. mainUrl can't actually be null here because
-    // 'only-running' availability + the daemon-start gate in setupMain (which
-    // throws if either URL is null — see PLAN §7.4) make this unreachable.
+    // mainUrl can be null in one situation: the user has never set it
+    // (fresh install, before completing Set Main URL). In that case the
+    // setup-token-pending task wouldn't exist either (the watcher only
+    // creates it once both URLs are set), so the action's only entry
+    // point is the user opening the hidden action directly — defensive
+    // path that returns a clear error rather than a malformed URL.
     if (!mainUrl) {
       throw new Error(
         'Main URL is not set; cannot construct setup URL. ' +

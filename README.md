@@ -81,7 +81,7 @@ Directory layout under `/data`:
 
 CryptPad on StartOS requires **two domains** for full browser sandbox security: a *main* domain for the application and a *sandbox* domain for isolated document rendering. The browser uses the difference between the two origins to enforce sandbox isolation around document iframes.
 
-**Three critical tasks appear after install.** The first two — **Set Main URL** and **Set Sandbox URL** — can be completed in either order. CryptPad will not start until both are set. Once both are done, the daemon starts and the third task — **Complete CryptPad Initial Setup** — appears.
+**Two critical tasks appear after install.** **Set Main URL** and **Set Sandbox URL** can be completed in either order. CryptPad will not start until both are set. Once both are done, the daemon starts and a third *important* task — **Complete CryptPad Initial Setup** — appears (informational; does not block startup).
 
 The three-task flow:
 
@@ -160,14 +160,16 @@ Picks the sandbox iframe origin — must be a *different* hostname from the Main
 | Property | Value |
 |---|---|
 | ID | `show-setup-token-url` |
-| Availability | Only when running |
-| Visibility | Hidden — surfaced via the third critical task on first install |
+| Availability | Any status |
+| Visibility | Hidden — surfaced via the third *important* task on first install |
 | Input | None |
 | Output | URL of the form `https://<main-host>/install/#<token>` (copyable, with QR code) |
 
-Reads CryptPad's decree log (`/data/decrees/decree.ndjson`) for the most recent unmatched `ADD_INSTALL_TOKEN` decree and constructs the corresponding `/install/#<token>` URL. Open the URL in a browser to run the install wizard (admin account creation, instance customization, application selection, registration policy).
+Reads CryptPad's decree log (`/data/decrees/decree.ndjson`) for the most recent `ADD_INSTALL_TOKEN` decree and constructs the corresponding `/install/#<token>` URL. Open the URL in a browser to run the install wizard (admin account creation, instance customization, application selection, registration policy).
 
-The URL is single-use — once you complete the wizard, the token is consumed and the action reports "setup already complete." Use the in-app `/admin/` panel for any further configuration changes.
+The decree log lives on the volume, so the action can be invoked whether the service is running or stopped. If the daemon has never bootstrapped (no decree file yet), the action returns a clear "wait ~30 seconds and retry" message.
+
+Once any `ADD_ADMIN_KEY` decree appears in the log (i.e., the wizard has completed, or an admin was added through the in-app `/admin/` panel), the action reports "setup already complete" and the third task auto-clears on the next reactive re-run of the init watcher. Use the in-app `/admin/` panel for any further configuration changes.
 
 ### Add Administrator by Public Key
 
@@ -307,5 +309,6 @@ backup_excludes: []
 critical_tasks_on_install:
   - main-url-not-set         # → set-main-url
   - sandbox-url-not-set      # → set-sandbox-url
+important_tasks_on_install:
   - setup-token-pending      # → show-setup-token-url (after both URLs set + daemon up)
 ```
