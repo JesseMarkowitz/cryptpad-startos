@@ -26,10 +26,9 @@ import { sdk } from '../sdk'
  * overwrite the original salt and brick all the user accounts in the
  * restored backup. The readFile / catch-ENOENT check below is THE thing
  * that prevents this. If anyone refactors this file in the future, that
- * guard MUST stay — the test plan in PLAN §14 verifies this end-to-end
- * (test 17a: post-restore login works with a pre-backup user account).
+ * guard MUST stay.
  */
-export const initializeService = sdk.setupOnInit(async (effects, kind) => {
+export const writeLoginSalt = sdk.setupOnInit(async (effects, kind) => {
   if (kind !== 'install') return
 
   const appConfigPath = sdk.volumes.main.subpath(

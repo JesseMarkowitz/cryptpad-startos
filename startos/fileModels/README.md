@@ -1,5 +1,14 @@
-Use the `/fileModels` directory to create separate `.ts` files to represent underlying files used by you package. The exported `FileModels` afford a convenient and type safe way to read amd write to the underlying files, as well as react to changes.
+## fileModels
 
-Supported file formats are `.yaml`, `.toml`, `.json`, `.env`, `.ini`, and `.txt`. For alternative file formats, you can use the `raw` method and provide custom serialization and parser functions.
+This package's only file model is `store.json.ts` — a small zod schema for
+StartOS-managed state: admin keys mirrored into `config.js`, the user-chosen
+main and sandbox URLs, and a one-shot latch for the wizard-completion
+notification.
 
-It is common for packages to use a `store.json.ts` FileModel as a convenient place to persist arbitrary data that are needed by the package but are _not_ persisted by the upstream service. For example, you might use store.json to persist startup flags or login credentials.
+CryptPad's actual `config.js` is **not** a file model. It is regenerated
+from scratch on every restart from `store.json` plus upstream defaults; the
+generator lives in `../cryptpadConfig.ts`.
+
+Everything else CryptPad reads (`/admin/`-panel state, decree log, pad data)
+is written by CryptPad itself and lives on the `main` volume — no file model
+exists for any of it.

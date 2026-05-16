@@ -1,14 +1,12 @@
 import { LangDict } from './default'
 
 /**
- * Translations are populated incrementally as components are added (see PLAN
- * §14: i18n strings translated into all five locales BEFORE sideload-test).
- * Empty dictionaries are valid here — the SDK falls back to DEFAULT_LANG for
- * any missing key.
+ * Translations are populated incrementally as components are added. Empty
+ * dictionaries are valid here — the SDK falls back to DEFAULT_LANG for any
+ * missing key.
  */
 export default {
   es_ES: {
-    0: 'Iniciando CryptPad',
     1: 'Interfaz web',
     2: 'CryptPad está listo',
     3: 'CryptPad no está listo',
@@ -40,9 +38,17 @@ export default {
     29: 'Elige el dominio del sandbox para el aislamiento del iframe de documentos de CryptPad.',
     30: 'Tu URL del sandbox seleccionada anteriormente ya no está disponible. Elige una nueva.',
     31: 'Abre esta URL una vez y completa el asistente para crear tu cuenta de administrador de CryptPad.',
+    32: 'Configuración de CryptPad completada',
+    33: 'Tu cuenta de administrador está activa. Abre el panel /admin/ dentro de CryptPad para más configuración.',
+    34: 'CryptPad no puede iniciarse hasta que se establezcan tanto la URL principal como la URL del sandbox. Ejecuta las acciones Establecer URL principal y Establecer URL del sandbox, luego inicia el servicio.',
+    35: 'CryptPad no puede iniciarse: la URL principal y la URL del sandbox deben tener orígenes distintos, pero ambas resuelven a',
+    36: 'El navegador usa la diferencia de origen para hacer cumplir el aislamiento del sandbox alrededor del renderizado de documentos: el mismo origen desactivaría esa protección. Vuelve a ejecutar Establecer URL principal o Establecer URL del sandbox y elige un nombre de host diferente para una de ellas.',
+    37: 'La URL principal no está establecida; no se puede construir la URL de diagnóstico. Ejecuta la acción Establecer URL principal e inténtalo de nuevo.',
+    38: 'La URL principal no está establecida; no se puede construir la URL de configuración. Ejecuta la acción Establecer URL principal e inténtalo de nuevo.',
+    39: 'Clave de administrador no válida:',
+    40: 'La URL principal y la URL del sandbox deben usar nombres de host diferentes para que el navegador pueda hacer cumplir el aislamiento del sandbox. Elige uno diferente.',
   },
   de_DE: {
-    0: 'CryptPad wird gestartet',
     1: 'Weboberfläche',
     2: 'CryptPad ist bereit',
     3: 'CryptPad ist nicht bereit',
@@ -74,9 +80,17 @@ export default {
     29: 'Wähle die Sandbox-Domain für die iframe-Isolation der CryptPad-Dokumente.',
     30: 'Deine zuvor gewählte Sandbox-URL ist nicht mehr verfügbar. Wähle eine neue.',
     31: 'Öffne diese URL einmal und schließe den Assistenten ab, um dein CryptPad-Administrator-Konto zu erstellen.',
+    32: 'CryptPad-Einrichtung abgeschlossen',
+    33: 'Dein Administrator-Konto ist aktiv. Öffne das /admin/-Panel innerhalb von CryptPad für weitere Konfiguration.',
+    34: 'CryptPad kann erst starten, wenn sowohl die Haupt-URL als auch die Sandbox-URL gesetzt sind. Führe die Aktionen Haupt-URL festlegen und Sandbox-URL festlegen aus und starte dann den Dienst.',
+    35: 'CryptPad kann nicht starten: Haupt-URL und Sandbox-URL müssen unterschiedliche Origins sein, aber beide zeigen auf',
+    36: 'Der Browser nutzt den Origin-Unterschied, um die Sandbox-Isolation rund um das Dokumenten-Rendering durchzusetzen — derselbe Origin würde diesen Schutz aufheben. Führe Haupt-URL festlegen oder Sandbox-URL festlegen erneut aus und wähle für eine der beiden einen anderen Hostnamen.',
+    37: 'Haupt-URL ist nicht gesetzt; Diagnose-URL kann nicht erstellt werden. Führe die Aktion Haupt-URL festlegen aus und versuche es erneut.',
+    38: 'Haupt-URL ist nicht gesetzt; Setup-URL kann nicht erstellt werden. Führe die Aktion Haupt-URL festlegen aus und versuche es erneut.',
+    39: 'Ungültiger Administrator-Schlüssel:',
+    40: 'Haupt-URL und Sandbox-URL müssen unterschiedliche Hostnamen verwenden, damit der Browser die Sandbox-Isolation durchsetzen kann. Wähle einen anderen.',
   },
   pl_PL: {
-    0: 'Uruchamianie CryptPad',
     1: 'Interfejs webowy',
     2: 'CryptPad jest gotowy',
     3: 'CryptPad nie jest gotowy',
@@ -108,9 +122,17 @@ export default {
     29: 'Wybierz domenę sandboxa dla izolacji iframe dokumentów CryptPad.',
     30: 'Twój wcześniej wybrany URL sandboxa nie jest już dostępny. Wybierz nowy.',
     31: 'Otwórz ten URL raz i ukończ kreatora, aby utworzyć konto administratora CryptPad.',
+    32: 'Konfiguracja CryptPad zakończona',
+    33: 'Twoje konto administratora jest aktywne. Otwórz panel /admin/ wewnątrz CryptPad, aby kontynuować konfigurację.',
+    34: 'CryptPad nie może się uruchomić, dopóki nie zostaną ustawione zarówno główny URL, jak i URL sandboxa. Uruchom akcje Ustaw główny URL i Ustaw URL sandboxa, a następnie uruchom usługę.',
+    35: 'CryptPad nie może się uruchomić: główny URL i URL sandboxa muszą być różnymi pochodzeniami, ale oba wskazują na',
+    36: 'Przeglądarka wykorzystuje różnicę pochodzenia do egzekwowania izolacji sandboxa wokół renderowania dokumentów — to samo pochodzenie wyłączyłoby tę ochronę. Uruchom ponownie Ustaw główny URL lub Ustaw URL sandboxa i wybierz inną nazwę hosta dla jednego z nich.',
+    37: 'Główny URL nie jest ustawiony; nie można utworzyć URL diagnostyki. Uruchom akcję Ustaw główny URL i spróbuj ponownie.',
+    38: 'Główny URL nie jest ustawiony; nie można utworzyć URL konfiguracji. Uruchom akcję Ustaw główny URL i spróbuj ponownie.',
+    39: 'Nieprawidłowy klucz administratora:',
+    40: 'Główny URL i URL sandboxa muszą używać różnych nazw hostów, aby przeglądarka mogła egzekwować izolację sandboxa. Wybierz inny.',
   },
   fr_FR: {
-    0: 'Démarrage de CryptPad',
     1: 'Interface web',
     2: 'CryptPad est prêt',
     3: "CryptPad n'est pas prêt",
@@ -142,5 +164,14 @@ export default {
     29: "Choisissez le domaine du bac à sable pour l'isolation de l'iframe des documents CryptPad.",
     30: "Votre URL du bac à sable précédemment sélectionnée n'est plus disponible. Choisissez-en une nouvelle.",
     31: 'Ouvrez cette URL une fois et complétez l\'assistant pour créer votre compte administrateur CryptPad.',
+    32: 'Configuration de CryptPad terminée',
+    33: "Votre compte administrateur est actif. Ouvrez le panneau /admin/ dans CryptPad pour la configuration supplémentaire.",
+    34: "CryptPad ne peut pas démarrer tant que l'URL principale et l'URL du bac à sable ne sont pas définies. Exécutez les actions Définir l'URL principale et Définir l'URL du bac à sable, puis démarrez le service.",
+    35: "CryptPad ne peut pas démarrer : l'URL principale et l'URL du bac à sable doivent être des origines différentes, mais les deux pointent vers",
+    36: "Le navigateur utilise la différence d'origine pour appliquer l'isolation du bac à sable autour du rendu des documents — la même origine désactiverait cette protection. Relancez Définir l'URL principale ou Définir l'URL du bac à sable et choisissez un nom d'hôte différent pour l'un des deux.",
+    37: "L'URL principale n'est pas définie ; impossible de construire l'URL de diagnostic. Exécutez l'action Définir l'URL principale et réessayez.",
+    38: "L'URL principale n'est pas définie ; impossible de construire l'URL de configuration. Exécutez l'action Définir l'URL principale et réessayez.",
+    39: 'Clé administrateur invalide :',
+    40: "L'URL principale et l'URL du bac à sable doivent utiliser des noms d'hôte différents pour que le navigateur puisse appliquer l'isolation du bac à sable. Choisissez-en un différent.",
   },
 } satisfies Record<string, LangDict>

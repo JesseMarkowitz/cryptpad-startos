@@ -43,6 +43,22 @@ export const setSandboxUrl = sdk.Action.withInput(
     url: (await storeJson.read((s) => s.sandboxUrl).once()) || undefined,
   }),
 
-  async ({ effects, input }) =>
-    storeJson.merge(effects, { sandboxUrl: input.url }),
+  // Cross-origin guard: refuse to save if the user picked the same hostname
+  // as the current mainUrl. Same check exists in setupMain as a backstop;
+  // catching it here gives the user the error at submit time rather than
+  // five minutes later when the daemon fails to start.
+  async ({ effects, input }) => {
+    const currentMain = await storeJson.read((s) => s.mainUrl).once()
+    if (
+      currentMain &&
+      new URL(input.url).origin === new URL(currentMain).origin
+    ) {
+      throw new Error(
+        i18n(
+          'Main URL and Sandbox URL must use different hostnames so the browser can enforce sandbox isolation. Pick a different one.',
+        ),
+      )
+    }
+    await storeJson.merge(effects, { sandboxUrl: input.url })
+  },
 )

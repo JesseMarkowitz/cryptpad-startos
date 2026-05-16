@@ -36,7 +36,7 @@ const VOLUME_SUBDIRS = [
 ] as const
 
 export const main = sdk.setupMain(async ({ effects }) => {
-  console.info(i18n('Starting CryptPad'))
+  console.info('Starting CryptPad')
 
   const store = await storeJson
     .read((s) => ({
@@ -53,8 +53,30 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // misconfiguration.
   if (!store?.mainUrl || !store?.sandboxUrl) {
     throw new Error(
-      'CryptPad cannot start until both Main URL and Sandbox URL are set. ' +
-        'Run the Set Main URL and Set Sandbox URL actions, then start the service.',
+      i18n(
+        'CryptPad cannot start until both Main URL and Sandbox URL are set. Run the Set Main URL and Set Sandbox URL actions, then start the service.',
+      ),
+    )
+  }
+
+  // CryptPad's browser-side sandbox isolation depends on httpUnsafeOrigin and
+  // httpSafeOrigin being different origins. The setter actions also gate on
+  // this, but the check lives here too — refuse to launch with a clear
+  // message rather than boot a broken security model if the store ever ends
+  // up with matching origins (e.g. the user edits store.json directly).
+  const mainOrigin = new URL(store.mainUrl).origin
+  const sandboxOrigin = new URL(store.sandboxUrl).origin
+  if (mainOrigin === sandboxOrigin) {
+    throw new Error(
+      i18n(
+        'CryptPad cannot start: Main URL and Sandbox URL must be different origins, but both resolve to',
+      ) +
+        ' ' +
+        mainOrigin +
+        '. ' +
+        i18n(
+          'The browser uses the origin difference to enforce sandbox isolation around document rendering — same-origin would disable that protection. Re-run Set Main URL or Set Sandbox URL and pick a different hostname for one of them.',
+        ),
     )
   }
 

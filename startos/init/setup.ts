@@ -50,7 +50,11 @@ export const setup = sdk.setupOnInit(async (effects) => {
     getMainUrls(effects),
     getSandboxUrls(effects),
     storeJson
-      .read((s) => ({ mainUrl: s.mainUrl, sandboxUrl: s.sandboxUrl }))
+      .read((s) => ({
+        mainUrl: s.mainUrl,
+        sandboxUrl: s.sandboxUrl,
+        wizardCompletedNotified: s.wizardCompletedNotified,
+      }))
       .const(effects),
   ])
 
@@ -112,6 +116,23 @@ export const setup = sdk.setupOnInit(async (effects) => {
       })
     } else {
       await sdk.action.clearTask(effects, 'setup-token-pending')
+    }
+
+    // First time we observe state === 'done' (i.e. ADD_ADMIN_KEY appeared
+    // in the decree log → wizard has completed), post a one-shot success
+    // notification so the user gets a phone ping confirming setup. The
+    // wizardCompletedNotified flag is the latch — without it this branch
+    // would fire on every container rebuild forever. Notifications are
+    // not idempotent (per notifications.md), so the latch is mandatory.
+    if (state.kind === 'done' && !store.wizardCompletedNotified) {
+      await sdk.notification.create(effects, {
+        level: 'success',
+        title: i18n('CryptPad setup complete'),
+        message: i18n(
+          'Your administrator account is active. Open the /admin/ panel inside CryptPad for further configuration.',
+        ),
+      })
+      await storeJson.merge(effects, { wizardCompletedNotified: true })
     }
   }
 })

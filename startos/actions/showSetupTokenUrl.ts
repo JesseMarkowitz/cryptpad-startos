@@ -60,8 +60,9 @@ export const showSetupTokenUrl = sdk.Action.withoutInput(
     // path that returns a clear error rather than a malformed URL.
     if (!mainUrl) {
       throw new Error(
-        'Main URL is not set; cannot construct setup URL. ' +
-          'Run the Set Main URL action and try again.',
+        i18n(
+          'Main URL is not set; cannot construct setup URL. Run the Set Main URL action and try again.',
+        ),
       )
     }
 

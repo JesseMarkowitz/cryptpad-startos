@@ -28,7 +28,7 @@ import {
  *   - disableIntegratedEviction: upstream default (false, eviction enabled)
  *     is what we want.
  *   - maxUploadSize, adminEmail, etc: managed via CryptPad's in-app
- *     /admin/ panel (PLAN §6, §9).
+ *     /admin/ panel.
  */
 export interface CryptpadConfigInputs {
   /** httpUnsafeOrigin — full origin (scheme://host[:port]) of the main UI. */

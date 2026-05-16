@@ -30,8 +30,9 @@ export const runDiagnostics = sdk.Action.withoutInput(
     // make this unreachable, but defensive code throws a clear message.
     if (!mainUrl) {
       throw new Error(
-        'Main URL is not set; cannot construct diagnostics URL. ' +
-          'Run the Set Main URL action and try again.',
+        i18n(
+          'Main URL is not set; cannot construct diagnostics URL. Run the Set Main URL action and try again.',
+        ),
       )
     }
 

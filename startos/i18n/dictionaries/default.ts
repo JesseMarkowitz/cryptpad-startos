@@ -2,7 +2,6 @@ export const DEFAULT_LANG = 'en_US'
 
 const dict = {
   // main.ts
-  'Starting CryptPad': 0,
   'Web Interface': 1,
   'CryptPad is ready': 2,
   'CryptPad is not ready': 3,
@@ -48,6 +47,25 @@ const dict = {
   "Choose the sandbox domain for CryptPad's document iframe isolation.": 29,
   'Your previously selected Sandbox URL is no longer available. Pick a new one.': 30,
   'Open this URL once and complete the wizard to create your CryptPad administrator account.': 31,
+
+  // init/setup.ts (wizard-completion notification)
+  'CryptPad setup complete': 32,
+  'Your administrator account is active. Open the /admin/ panel inside CryptPad for further configuration.': 33,
+
+  // main.ts (startup gates) and setter actions (cross-origin gate)
+  'CryptPad cannot start until both Main URL and Sandbox URL are set. Run the Set Main URL and Set Sandbox URL actions, then start the service.': 34,
+  'CryptPad cannot start: Main URL and Sandbox URL must be different origins, but both resolve to': 35,
+  'The browser uses the origin difference to enforce sandbox isolation around document rendering — same-origin would disable that protection. Re-run Set Main URL or Set Sandbox URL and pick a different hostname for one of them.': 36,
+
+  // actions/runDiagnostics.ts and actions/showSetupTokenUrl.ts (defensive throws)
+  'Main URL is not set; cannot construct diagnostics URL. Run the Set Main URL action and try again.': 37,
+  'Main URL is not set; cannot construct setup URL. Run the Set Main URL action and try again.': 38,
+
+  // actions/addAdminKey.ts (parser failure)
+  'Invalid admin key:': 39,
+
+  // actions/setMainUrl.ts and actions/setSandboxUrl.ts (cross-origin gate)
+  'Main URL and Sandbox URL must use different hostnames so the browser can enforce sandbox isolation. Pick a different one.': 40,
 } as const
 
 /**

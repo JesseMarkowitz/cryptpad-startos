@@ -13,10 +13,9 @@ import { sdk } from './sdk'
  *
  * # Completion signal — verified against a real wizard run
  *
- * The original v1 design (PLAN §13 open question 2) guessed CryptPad would
- * emit a paired RM_INSTALL_TOKEN decree when the user finished the install
- * wizard. It does not. Inspecting a real decree log after a successful
- * wizard run on home-test showed:
+ * CryptPad does NOT emit a paired RM_INSTALL_TOKEN decree when the install
+ * wizard finishes — the token line stays in the log forever. Inspecting a
+ * real decree log after a successful wizard run showed:
  *
  *     ["ADD_INSTALL_TOKEN", ["dd1921…"], "", t0]   ← from boot
  *     ["ADD_ADMIN_KEY",     ["267EvV…"], "", t1]   ← from wizard

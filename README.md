@@ -62,7 +62,7 @@ Directory layout under `/data`:
 
 | Path | Contents |
 |---|---|
-| `/data/store.json` | StartOS state — `adminKeys`, `mainUrl`, `sandboxUrl` |
+| `/data/store.json` | StartOS state — `adminKeys`, `mainUrl`, `sandboxUrl`, `wizardCompletedNotified` (one-shot latch for the setup-complete notification) |
 | `/data/datastore/` | Document data (`filePath`) |
 | `/data/blob/`, `/data/blobstage/` | Encrypted file uploads (`blobPath`, `blobStagingPath`) |
 | `/data/block/` | Authenticated user blocks (`blockPath`) |
@@ -86,8 +86,10 @@ CryptPad on StartOS requires **two domains** for full browser sandbox security: 
 The three-task flow:
 
 1. **Set Main URL** — pick the URL users will open in their browser. Choose any reachable HTTPS URL StartOS exposes (LAN domain, mDNS, Tor, public domain).
-2. **Set Sandbox URL** — pick a *different* hostname for the sandbox iframe. The browser must see this as a different origin from the main URL for sandbox isolation to work.
+2. **Set Sandbox URL** — pick a *different* hostname for the sandbox iframe. The browser must see this as a different origin from the main URL for sandbox isolation to work. `setupMain` refuses to launch if the two URLs share an origin (the sandbox boundary would collapse), so this is enforced at startup as well as documented in the action copy.
 3. **Complete CryptPad Initial Setup** — appears once the daemon has bootstrapped. Run the action to copy the install-token URL, open it in a browser, and complete the wizard to create your first administrator account, customize the instance, and (optionally) close registrations.
+
+When the wizard finishes, the reactive watcher posts a one-shot **"CryptPad setup complete"** notification to the StartOS notifications panel — useful as a phone-ping confirmation if you walked away during the wizard. It fires exactly once per install (latched on the `wizardCompletedNotified` flag in `store.json`).
 
 The install-token URL is single-use. Once you finish the wizard, the URL is consumed; running the action again reports "setup already complete" and points you at the in-app `/admin/` panel for further changes.
 
@@ -153,7 +155,7 @@ CryptPad will not start until both this and `Set Sandbox URL` are set. Re-run an
 | Input | Dropdown of currently-reachable HTTPS URLs |
 | Output | None |
 
-Picks the sandbox iframe origin — must be a *different* hostname from the Main URL for CryptPad's browser sandbox isolation to function. The action is the only mechanism for picking the sandbox URL because the sandbox interface is `type: 'api'` and not clickable in the StartOS launcher. Saved to `store.json` as `sandboxUrl`.
+Picks the sandbox iframe origin — must be a *different* hostname from the Main URL for CryptPad's browser sandbox isolation to function. Both setter actions cross-validate against the current value of the other field and refuse to save a same-origin URL; `setupMain` keeps an identical check as a backstop. The action is the only mechanism for picking the sandbox URL because the sandbox interface is `type: 'api'` and not clickable in the StartOS launcher. Saved to `store.json` as `sandboxUrl`.
 
 ### Show Setup Token URL
 

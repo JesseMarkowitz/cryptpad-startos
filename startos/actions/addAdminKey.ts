@@ -19,7 +19,7 @@ function extractKey(raw: string): string {
   if (m) return m[1]
   // Bare-key form.
   if (/^[A-Za-z0-9+/_\-]+=*$/.test(trimmed)) return trimmed
-  throw new Error(`Invalid admin key: ${raw}`)
+  throw new Error(i18n('Invalid admin key:') + ' ' + raw)
 }
 
 const inputSpec = InputSpec.of({
