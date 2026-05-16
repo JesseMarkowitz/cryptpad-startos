@@ -32,3 +32,13 @@ export const UPSTREAM_INSTALL_METHOD = 'docker' as const
 /** Upstream's docker-entrypoint.sh sets httpAddress via sed when generating
  *  config.js from scratch. Same preservation reason as installMethod. */
 export const UPSTREAM_HTTP_ADDRESS = '0.0.0.0' as const
+
+/** CryptPad's container user — upstream Dockerfile@v2026.2.2:
+ *    addgroup -S cryptpad -g 4001 && adduser -S cryptpad
+ *  Any file or directory on the `main` volume that CryptPad needs to read
+ *  or write must be chown'd to this UID/GID. The StartOS service runtime
+ *  runs as root, so anything we create from package code defaults to root
+ *  ownership and is unreadable by the cryptpad user inside the container
+ *  unless we explicitly chown it. */
+export const CRYPTPAD_UID = 4001 as const
+export const CRYPTPAD_GID = 4001 as const

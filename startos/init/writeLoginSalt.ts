@@ -1,6 +1,7 @@
 import { utils } from '@start9labs/start-sdk'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { chown, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { sdk } from '../sdk'
+import { CRYPTPAD_GID, CRYPTPAD_UID } from '../upstream-defaults'
 
 /**
  * Install-only — write loginSalt to the volume's customize/application_config.js
@@ -81,4 +82,11 @@ if (typeof(module) !== 'undefined' && module.exports) {
   // this is a no-op.
   await mkdir(sdk.volumes.main.subpath('customize'), { recursive: true })
   await writeFile(appConfigPath, body, { mode: 0o640 })
+  // Chown the file to the cryptpad user — the StartOS runtime runs as root,
+  // so writeFile creates files as root by default. CryptPad runs as UID 4001
+  // inside the container; without this chown, mode 0o640 (rw-r-----) plus
+  // root ownership locks 4001 out and the customize asset loads 403 in the
+  // browser, hanging the SPA. main.ts performs the same chown defensively
+  // at every startup to auto-heal stale installs from before this fix.
+  await chown(appConfigPath, CRYPTPAD_UID, CRYPTPAD_GID)
 })

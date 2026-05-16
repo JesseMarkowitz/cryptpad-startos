@@ -3,19 +3,13 @@ import { generateCryptpadConfig } from './cryptpadConfig'
 import { storeJson } from './fileModels/store.json'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
+import { CRYPTPAD_GID, CRYPTPAD_UID } from './upstream-defaults'
 import { uiPort } from './utils'
-
-// CryptPad's container runs as user/group cryptpad with UID/GID 4001.
-// Verified in upstream Dockerfile@v2026.2.2:
-//   addgroup -S cryptpad -g 4001 && adduser -S cryptpad
-const CRYPTPAD_UID = 4001
-const CRYPTPAD_GID = 4001
 
 /**
  * Subdirectories under the main volume that CryptPad writes to. The volume
  * root mount is owned by root, so we pre-create each subpath as 4001:4001
- * before the daemon starts — pattern lifted from the prior attempt's
- * main.ts (cryptpad-startos@update/040 main.ts:60-73), which had it right.
+ * before the daemon starts.
  *
  * `customize` and `onlyoffice-conf` are also subpath-mounted, so the
  * dirs must exist before SubContainer.of() resolves the mounts — both for
@@ -34,6 +28,19 @@ const VOLUME_SUBDIRS = [
   'customize',
   'onlyoffice-conf',
 ] as const
+
+/**
+ * Files inside chown'd subdirs that were created by init code running as
+ * root and must be chown'd to the cryptpad user. The ensureDir loop below
+ * only chowns the directories themselves; chown is not recursive in the
+ * Node fs API, so files inside need their own pass.
+ *
+ * Currently the only such file is the loginSalt customize file written by
+ * `init/writeLoginSalt.ts`. That init also chowns the file at create time,
+ * so this list is defense-in-depth — it auto-heals stale installs from
+ * before the create-time chown was added.
+ */
+const VOLUME_FILES = ['customize/application_config.js'] as const
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info('Starting CryptPad')
@@ -88,7 +95,26 @@ export const main = sdk.setupMain(async ({ effects }) => {
     await mkdir(path, { recursive: true })
     await chown(path, CRYPTPAD_UID, CRYPTPAD_GID)
   }
-  await Promise.all(VOLUME_SUBDIRS.map(ensureDir))
+  const ensureFileOwnership = async (rel: string) => {
+    try {
+      await chown(sdk.volumes.main.subpath(rel), CRYPTPAD_UID, CRYPTPAD_GID)
+    } catch (e: unknown) {
+      // ENOENT is expected on fresh installs before writeLoginSalt has run,
+      // and on update kinds where the file may not exist yet.
+      if (
+        typeof e !== 'object' ||
+        e === null ||
+        !('code' in e) ||
+        (e as { code: string }).code !== 'ENOENT'
+      ) {
+        throw e
+      }
+    }
+  }
+  await Promise.all([
+    ...VOLUME_SUBDIRS.map(ensureDir),
+    ...VOLUME_FILES.map(ensureFileOwnership),
+  ])
 
   const appSub = await sdk.SubContainer.of(
     effects,
