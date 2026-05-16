@@ -7,7 +7,7 @@ export const showSetupTokenUrl = sdk.Action.withoutInput(
   'show-setup-token-url',
 
   async ({ effects }) => ({
-    name: i18n('Show Setup Token URL'),
+    name: i18n('Complete CryptPad Initial Setup'),
     description: i18n(
       'Open this URL in a browser to create your CryptPad administrator account. The URL is single-use — once you complete the wizard, it is no longer valid.',
     ),

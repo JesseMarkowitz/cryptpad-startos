@@ -157,11 +157,11 @@ CryptPad will not start until both this and `Set Sandbox URL` are set. Re-run an
 
 Picks the sandbox iframe origin — must be a *different* hostname from the Main URL for CryptPad's browser sandbox isolation to function. Both setter actions cross-validate against the current value of the other field and refuse to save a same-origin URL; `setupMain` keeps an identical check as a backstop. The action is the only mechanism for picking the sandbox URL because the sandbox interface is `type: 'api'` and not clickable in the StartOS launcher. Saved to `store.json` as `sandboxUrl`.
 
-### Show Setup Token URL
+### Complete CryptPad Initial Setup
 
 | Property | Value |
 |---|---|
-| ID | `show-setup-token-url` |
+| ID | `show-setup-token-url` (action ID retained for stable references; UI name is `Complete CryptPad Initial Setup`) |
 | Availability | Any status |
 | Visibility | Hidden — surfaced via the third *important* task on first install |
 | Input | None |
