@@ -1,7 +1,8 @@
 import { setMainUrl } from '../actions/setMainUrl'
 import { setSandboxUrl } from '../actions/setSandboxUrl'
 import { showSetupTokenUrl } from '../actions/showSetupTokenUrl'
-import { readSetupState } from '../decrees'
+import { decreeLog } from '../fileModels/decreeLog'
+import { parseSetupState } from '../setupState'
 import { storeJson } from '../fileModels/store.json'
 import { i18n } from '../i18n'
 import { sdk } from '../sdk'
@@ -46,16 +47,34 @@ import { getMainUrls, getSandboxUrls } from '../utils'
  *   - Third task layered on top of the URL gate.
  */
 export const setup = sdk.setupOnInit(async (effects) => {
-  const [mainUrls, sandboxUrls, store] = await Promise.all([
+  const [mainUrls, sandboxUrls, store, decreeRaw] = await Promise.all([
     getMainUrls(effects),
     getSandboxUrls(effects),
     storeJson
       .read((s) => ({
         mainUrl: s.mainUrl,
         sandboxUrl: s.sandboxUrl,
-        wizardCompletedNotified: s.wizardCompletedNotified,
+        // `wizardCompletedNotified` is deliberately NOT selected here.
+        //
+        // The notification block below writes it back to store.json. The SDK
+        // cancels a write to a file whose `.const()`-mapped value the write
+        // would change — `Canceled: write after const` — because the running
+        // handler's snapshot is now stale. Observed in the wild: the write
+        // landed but init aborted with that error immediately after the
+        // wizard's ADD_ADMIN_KEY decree.
+        //
+        // Excluding the field from the map means the mapped value is
+        // unchanged by the write, so the guard doesn't fire. The latch is
+        // read below with `.once()` instead. This is also more correct on its
+        // own terms: flipping the latch should not re-run this watcher, and
+        // selecting it made the watcher reactive to its own bookkeeping.
       }))
       .const(effects),
+    // Reactive, and load-bearing: this is what re-runs the watcher when the
+    // daemon first creates the decree log. Reading it with a bare `readFile`
+    // meant the setup-token task never appeared, because nothing re-triggered
+    // this handler after the daemon booted. See fileModels/decreeLog.ts.
+    decreeLog.read((s) => s).const(effects),
   ])
 
   // ── Main URL ──────────────────────────────────────────────────────
@@ -106,7 +125,7 @@ export const setup = sdk.setupOnInit(async (effects) => {
   // readSetupState() reports 'waiting-for-daemon' and we don't surface
   // a task — the user just sees the daemon starting up.
   if (store?.mainUrl && store?.sandboxUrl) {
-    const state = await readSetupState()
+    const state = parseSetupState(decreeRaw)
     if (state.kind === 'pending') {
       await sdk.action.createOwnTask(effects, showSetupTokenUrl, 'important', {
         replayId: 'setup-token-pending',
@@ -124,7 +143,10 @@ export const setup = sdk.setupOnInit(async (effects) => {
     // wizardCompletedNotified flag is the latch — without it this branch
     // would fire on every container rebuild forever. Notifications are
     // not idempotent (per notifications.md), so the latch is mandatory.
-    if (state.kind === 'done' && !store.wizardCompletedNotified) {
+    const alreadyNotified = await storeJson
+      .read((s) => s.wizardCompletedNotified)
+      .once()
+    if (state.kind === 'done' && !alreadyNotified) {
       await sdk.notification.create(effects, {
         level: 'success',
         title: i18n('CryptPad setup complete'),

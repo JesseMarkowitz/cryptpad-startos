@@ -1,3 +1,11 @@
+> [!NOTE]
+> **Superseded — historical design document.** This plan was written before any code existed
+> (its "Status" line below is stale: the package is fully implemented). It is retained for the
+> design rationale and the record of locked decisions. For current state see `README.md`
+> (architecture), `TODO.md` (live worklist), `NextSteps.md` (release-gate test checklist), and
+> `UPDATING.md` (upstream tracking). Version and SDK details in this document are out of date:
+> the package now wraps CryptPad 2026.5.1 on start-sdk 2.0.9.
+
 # CryptPad on StartOS — Phase 1 Plan
 
 **Status:** Awaiting approval. No code written yet. This file is the only artifact in `~/myworkspace/cryptpad-startos/`.

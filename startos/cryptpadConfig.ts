@@ -9,12 +9,12 @@ import {
  * Generate the contents of config.js — the file CryptPad's Node server
  * reads at startup. We write this to the subcontainer rootfs at
  * /cryptpad/config/config.js on every restart; the upstream entrypoint's
- * `[ ! -f "$CPAD_CONF" ]` guard (verified in docker-entrypoint.sh@v2026.2.2)
+ * `[ ! -f "$CPAD_CONF" ]` guard (verified in docker-entrypoint.sh@2026.5.1)
  * means our pre-written file bypasses the entrypoint's auto-generation
  * branch entirely.
  *
  * Path overrides (filePath, blobPath, …) point at /data/* — the volume
- * mount. taskPath is included because upstream's config.example.js@v2026.2.2
+ * mount. taskPath is included because upstream's config.example.js@2026.5.1
  * lists it; the prior attempt missed it, leaving CryptPad's scheduled-task
  * storage at the upstream relative default (./data/tasks → resolved against
  * /cryptpad as cwd → ephemeral rootfs path = lost on container rebuild).

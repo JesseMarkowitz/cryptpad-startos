@@ -29,7 +29,7 @@ export const setSandboxUrl = sdk.Action.withInput(
   async ({ effects }) => ({
     name: i18n('Set Sandbox URL'),
     description: i18n(
-      'Choose which URL CryptPad should use as its sandbox iframe origin. This must be a different hostname from the Main URL — the browser uses the origin difference to enforce sandbox isolation around document rendering.',
+      'Choose which URL CryptPad should use as its sandbox iframe origin. It must be a different ORIGIN from the Main URL. A different port on the same hostname is enough — StartOS assigns the two interfaces different ports automatically — or use a different hostname if you are serving CryptPad over a domain. The browser relies on that difference to isolate document rendering.',
     ),
     warning: null,
     allowedStatuses: 'any',
@@ -55,7 +55,7 @@ export const setSandboxUrl = sdk.Action.withInput(
     ) {
       throw new Error(
         i18n(
-          'Main URL and Sandbox URL must use different hostnames so the browser can enforce sandbox isolation. Pick a different one.',
+          'Main URL and Sandbox URL must be different origins so the browser can enforce sandbox isolation. Two addresses differ if either the hostname or the port differs. Pick a different one.',
         ),
       )
     }

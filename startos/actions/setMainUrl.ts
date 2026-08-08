@@ -25,7 +25,7 @@ export const setMainUrl = sdk.Action.withInput(
   async ({ effects }) => ({
     name: i18n('Set Main URL'),
     description: i18n(
-      "Choose which URL CryptPad should serve as its main app. This is the URL users open in their browser. CryptPad will not start until both Main URL and Sandbox URL are set.",
+      'Choose which URL CryptPad should serve as its main app. This is the URL users open in their browser. CryptPad will not start until both Main URL and Sandbox URL are set.',
     ),
     warning: null,
     // 'any' so the user can re-run later to switch the main URL after the
@@ -58,7 +58,7 @@ export const setMainUrl = sdk.Action.withInput(
     ) {
       throw new Error(
         i18n(
-          'Main URL and Sandbox URL must use different hostnames so the browser can enforce sandbox isolation. Pick a different one.',
+          'Main URL and Sandbox URL must be different origins so the browser can enforce sandbox isolation. Two addresses differ if either the hostname or the port differs. Pick a different one.',
         ),
       )
     }

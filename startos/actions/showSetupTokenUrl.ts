@@ -73,12 +73,19 @@ export const showSetupTokenUrl = sdk.Action.withoutInput(
       message: i18n(
         'Open this URL in a browser to create your administrator account.',
       ),
+      // Masked, and deliberately no QR. This URL is a credential: whoever
+      // holds it creates the first administrator on an instance that has
+      // none. The fleet convention for credentials (actions.md,
+      // recipe-admin-credentials.md) is masked + copyable — masking hides the
+      // value from shoulder-surfing and screen shares without breaking the
+      // copy path. The QR is dropped rather than kept because rendering the
+      // same secret as a scannable image would defeat masking the text.
       result: {
         type: 'single' as const,
         value: `${base}/install/#${state.token}`,
         copyable: true,
-        masked: false,
-        qr: true,
+        masked: true,
+        qr: false,
       },
     }
   },

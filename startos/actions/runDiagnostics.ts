@@ -14,7 +14,7 @@ export const runDiagnostics = sdk.Action.withoutInput(
   async ({ effects }) => ({
     name: i18n('Run Diagnostics'),
     description: i18n(
-      'Open the URL returned by this action in a browser to run CryptPad\'s built-in self-diagnostic tests. Use this to verify your install or troubleshoot. NOTE: some tests fail by design until you turn the corresponding feature on in /admin/ — for example "support help-desk not initialized" and "embedding disabled" are user-toggle features, not configuration errors.',
+      "Open the URL returned by this action in a browser to run CryptPad's built-in self-diagnostic tests. Use this to verify your install or troubleshoot. NOTE: four tests fail by design on a fresh instance and are not configuration errors — encrypted support tickets, terms of service, and privacy policy are optional settings you enable in /admin/, and HSTS is handled by StartOS at the TLS edge so CryptPad cannot set it. See the Instructions tab for details.",
     ),
     warning: null,
     allowedStatuses: 'only-running',

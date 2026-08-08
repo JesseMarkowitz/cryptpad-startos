@@ -1,7 +1,7 @@
 /**
- * Constants extracted from upstream's config/config.example.js at tag v2026.2.2.
+ * Constants extracted from upstream's config/config.example.js at tag 2026.5.1.
  * Re-verify if you bump CryptPad version:
- *   https://github.com/cryptpad/cryptpad/blob/v2026.2.2/config/config.example.js
+ *   https://github.com/cryptpad/cryptpad/blob/2026.5.1/config/config.example.js
  *
  * The point of this file is to make every "magic number" in the wrapper
  * traceable to a specific upstream commit so a future maintainer can grep for
@@ -19,7 +19,7 @@ export const UPSTREAM_HTTP_SAFE_PORT = 3001 as const
 
 /** websocketPort — CryptPad's HTTP server on uiPort intercepts upgrade
  *  requests for /cryptpad_websocket and proxies them internally to this
- *  port (lib/http-worker.js@v2026.2.2: server.on('upgrade', wsProxy.upgrade)).
+ *  port (lib/http-worker.js@2026.5.1: server.on('upgrade', wsProxy.upgrade)).
  *  Declared for documentation; never bound externally. */
 export const UPSTREAM_WEBSOCKET_PORT = 3003 as const
 
@@ -33,7 +33,7 @@ export const UPSTREAM_INSTALL_METHOD = 'docker' as const
  *  config.js from scratch. Same preservation reason as installMethod. */
 export const UPSTREAM_HTTP_ADDRESS = '0.0.0.0' as const
 
-/** CryptPad's container user — upstream Dockerfile@v2026.2.2:
+/** CryptPad's container user — upstream Dockerfile@2026.5.1:
  *    addgroup -S cryptpad -g 4001 && adduser -S cryptpad
  *  Any file or directory on the `main` volume that CryptPad needs to read
  *  or write must be chown'd to this UID/GID. The StartOS service runtime

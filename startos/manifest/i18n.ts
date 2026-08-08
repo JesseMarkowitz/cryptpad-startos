@@ -18,16 +18,3 @@ export const long = {
   fr_FR:
     "CryptPad est une suite collaborative chiffrée de bout en bout axée sur la confidentialité. Modifiez des documents, tableurs, présentations, tableaux blancs, tableaux kanban et plus encore — tout est chiffré dans votre navigateur avant d'atteindre le serveur.",
 }
-
-export const alertInstall = {
-  en_US:
-    'CryptPad on StartOS requires TWO different domains — one for the app and one for the document sandbox iframe. After install, follow the Instructions tab to set both URLs and complete initial setup.',
-  es_ES:
-    'CryptPad en StartOS requiere DOS dominios distintos: uno para la aplicación y otro para el iframe del sandbox de documentos. Tras la instalación, sigue la pestaña Instrucciones para establecer ambas URL y completar la configuración inicial.',
-  de_DE:
-    'CryptPad auf StartOS benötigt ZWEI verschiedene Domains – eine für die Anwendung und eine für den Dokumenten-Sandbox-iframe. Folge nach der Installation dem Tab Anweisungen, um beide URLs festzulegen und die Erstkonfiguration abzuschließen.',
-  pl_PL:
-    'CryptPad na StartOS wymaga DWÓCH różnych domen — jednej dla aplikacji i jednej dla iframe sandboxa dokumentów. Po instalacji postępuj zgodnie z zakładką Instrukcje, aby ustawić oba adresy URL i zakończyć wstępną konfigurację.',
-  fr_FR:
-    "CryptPad sur StartOS nécessite DEUX domaines différents — un pour l'application et un pour l'iframe du bac à sable des documents. Après l'installation, suivez l'onglet Instructions pour définir les deux URL et terminer la configuration initiale.",
-}

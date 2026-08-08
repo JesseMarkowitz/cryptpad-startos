@@ -1,16 +1,16 @@
 # DO NOT add nginx / Caddy / Traefik or any other reverse proxy to this image.
 # CryptPad's Node server already serves the correct CSP / COEP / CORP headers
-# for the /checkup/ self-test (see lib/http-worker.js@v2026.2.2 setHeaders);
+# for the /checkup/ self-test (see lib/http-worker.js@2026.5.1 setHeaders);
 # an in-container proxy duplicates them and breaks browser security checks.
 # StartOS terminates TLS at the platform layer — there is nothing for an
 # in-container proxy to do.
 #
 # CryptPad's HTTP server on port 3000 internally proxies /cryptpad_websocket
-# to its own WebSocket server on port 3003 (lib/http-worker.js@v2026.2.2:
+# to its own WebSocket server on port 3003 (lib/http-worker.js@2026.5.1:
 # server.on('upgrade', wsProxy.upgrade)). Port 3003 must NEVER be bound
 # externally — declared in upstream-defaults.ts as documentation only.
 
-FROM cryptpad/cryptpad:version-2026.2.2
+FROM cryptpad/cryptpad:version-2026.5.1
 
 # Bake OnlyOffice (Document / Sheet / Presentation editors) into the image
 # at build time so users don't pay a 10–15 minute first-start download.
@@ -24,7 +24,7 @@ FROM cryptpad/cryptpad:version-2026.2.2
 # script idempotently re-checks state on subsequent runs against the
 # onlyoffice.properties file in conf/.
 #
-# Flags (verified against install-onlyoffice.sh@v2026.2.2):
+# Flags (verified against install-onlyoffice.sh@2026.5.1):
 #   --accept-license     — bypass the interactive license review
 #   --trust-repository   — git safe.directory for the cloned onlyoffice-builds
 #                          repo (the build runs as root which mismatches the

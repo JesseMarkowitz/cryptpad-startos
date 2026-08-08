@@ -82,7 +82,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         mainOrigin +
         '. ' +
         i18n(
-          'The browser uses the origin difference to enforce sandbox isolation around document rendering — same-origin would disable that protection. Re-run Set Main URL or Set Sandbox URL and pick a different hostname for one of them.',
+          'The browser uses the origin difference to enforce sandbox isolation around document rendering — same-origin would disable that protection. Re-run Set Main URL or Set Sandbox URL and pick an entry that differs in hostname or port.',
         ),
     )
   }
@@ -116,7 +116,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
     ...VOLUME_FILES.map(ensureFileOwnership),
   ])
 
-  const appSub = await sdk.SubContainer.of(
+  // `eager`, not `of`. As of start-sdk 2.0 `SubContainer.of` is lazy: it
+  // returns synchronously and materializes the filesystem on first method
+  // call, so `rootfs` widens to a Promise. We read `.rootfs` synchronously
+  // below to pre-write config.js, and we want a failing `createFs` to throw
+  // here rather than at some later first-use. `eager` gives both.
+  const appSub = await sdk.SubContainer.eager(
     effects,
     { imageId: 'cryptpad' },
     sdk.Mounts.of()
@@ -143,7 +148,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   // Pre-write config.js into the subcontainer's rootfs. The upstream
   // entrypoint guards with `[ ! -f "$CPAD_CONF" ]` (docker-entrypoint.sh
-  // @v2026.2.2) — our file existing means the entrypoint's auto-generation
+  // @2026.5.1) — our file existing means the entrypoint's auto-generation
   // sed branch is skipped entirely, leaving us in full control.
   await writeFile(
     `${appSub.rootfs}/cryptpad/config/config.js`,
@@ -159,7 +164,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
     exec: {
       command: sdk.useEntrypoint(),
       env: {
-        // Required by docker-entrypoint.sh@v2026.2.2 (declared as required
+        // Required by docker-entrypoint.sh@2026.5.1 (declared as required
         // vars at the top of the script):
         //
         //   CPAD_CONF — pointed at our pre-written file so the entrypoint's
@@ -178,6 +183,18 @@ export const main = sdk.setupMain(async ({ effects }) => {
     },
     ready: {
       display: i18n('Web Interface'),
+      // Default is 10s, and that is uncomfortably tight here. The upstream
+      // entrypoint runs `npm run build` on EVERY container start (it
+      // regenerates ~25 www/*/index.html files before `node server.js`), so
+      // the port is not bound for several seconds. Measured ~8s on x86_64;
+      // slower storage or aarch64 would exceed the default and make the UI
+      // flash a red failure on every single restart. Within the grace period
+      // `failure` is reported as `starting` instead.
+      //
+      // This does not silence the health check's own "Error while fetching
+      // URL / ECONNREFUSED" log lines during boot — those come from
+      // checkWebUrl itself and are expected noise until the server binds.
+      gracePeriod: 60_000,
       // /api/config is the same endpoint CryptPad's own client UI fetches
       // during boot — the canonical application-defined readiness signal.
       // 200 here means: Node server up, config parsed, API responding.

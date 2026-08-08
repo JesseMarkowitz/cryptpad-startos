@@ -1,5 +1,5 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import { alertInstall, long, short } from './i18n'
+import { long, short } from './i18n'
 
 export const manifest = setupManifest({
   id: 'cryptpad',
@@ -16,14 +16,6 @@ export const manifest = setupManifest({
       source: { dockerBuild: {} },
       arch: ['x86_64', 'aarch64'],
     },
-  },
-  alerts: {
-    install: alertInstall,
-    update: null,
-    uninstall: null,
-    restore: null,
-    start: null,
-    stop: null,
   },
   dependencies: {},
 })
