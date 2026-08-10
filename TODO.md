@@ -24,15 +24,13 @@ Live worklist. Remove items as they're finished; add items when work is deferred
 ## Verified locally
 
 - x86_64 builds and packs clean at `2026.5.1:0` on start-sdk 2.0.9; `npm run check` green.
-- **aarch64 is unverified locally** and that is expected: this dev box has no `qemu-aarch64`
-  binfmt handler registered, so a cross-build fails at `exec /bin/sh: exec format error` before
-  running any package code. Not a package defect. CI builds `arm` on a **native**
-  `ubuntu-24.04-arm` runner (no QEMU), so the matrix build is the real check. The OnlyOffice
-  artifacts the Dockerfile bakes are architecture-independent (`onlyoffice-editor.zip` is
-  browser JS/CSS; `x2t.zip` is WebAssembly), and the upstream base image publishes arm64 — so
-  there is no known arch-specific risk, just no local proof.
-  To verify locally anyway: `docker run --privileged --rm tonistiigi/binfmt --install arm64`,
-  then `make arm`.
+- **aarch64 verified on CI.** The `Build` workflow's `arm` leg completed green in 3m44s on a
+  native `ubuntu-24.04-arm` runner (GitHub run 31250455537), producing `cryptpad_aarch64.s9pk`.
+  It cannot be built on the maintainer's x86 dev box — there is no `qemu-aarch64` binfmt handler
+  registered, so a cross-build fails at `exec /bin/sh: exec format error` before any package code
+  runs. That is a local environment limit, not a package defect; CI is the real check. To build
+  it locally anyway: `docker run --privileged --rm tonistiigi/binfmt --install arm64`, then
+  `make arm`.
 
 ## Resolved decisions
 
@@ -77,6 +75,21 @@ Live worklist. Remove items as they're finished; add items when work is deferred
       Uses `node:test` with **no new devDependencies** — no Start9 package ships a test harness,
       and Node 22 strips types natively. `npm test` runs it. Fixtures are synthetic; never paste
       values from a live instance, since an install token grants first-admin creation.
+
+## Needs a decision before community submission
+
+- [ ] **Raise the 0.3.x upgrade path with Start9 in the submission email.** The retired
+      `Start9Labs/cryptpad-startos` (0.3.x `manifest.yaml`, CryptPad 5.2.1, six volumes: main,
+      blob, block, customize, data, datastore) has no 0.4.0 successor, and this package cannot
+      serve as one — different volume layout, ~4 years of upstream data-format drift, and an
+      empty `up` migration. `canMigrateFrom` is derived and cannot be narrowed
+      (`other: []` → `<=current`), so StartOS will treat this as a valid upgrade from 5.2.1 and
+      run that empty migration.
+      Ask Start9 to add CryptPad to the "Services with special handling" list in the 0.4.0
+      update guide, alongside Ghost and Synapse, with export-then-reimport guidance. Documented
+      defensively in `README.md` and `instructions.md` in the meantime.
+      **Unverified** — nobody has run 0.3.5.1 → 0.4.0 with CryptPad installed. Do not assert a
+      specific failure mode without testing it.
 
 ## Upstream (StartOS platform, not this package)
 

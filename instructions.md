@@ -21,6 +21,11 @@
 >
 >    You must repeat this whenever the sandbox address changes — notably after a restore, which assigns new ports. That is the reason option 1 is the real fix and this is only a stopgap.
 
+> [!WARNING]
+> **Coming from CryptPad on StartOS 0.3.x? Export your pads first.** This is a new package, not an upgrade of the old one. The old service stored its data in a completely different layout and wrapped a CryptPad release from several years ago, so installing this will **not** bring your existing documents across — you will get an empty instance.
+>
+> Before you migrate your server, open your old CryptPad, sign in, and export your drive. After installing this package and completing setup, import the pads back in.
+
 ## Documentation
 
 - [CryptPad Admin Guide](https://docs.cryptpad.org/en/admin_guide/index.html) — the upstream guide for instance configuration, the `/admin/` panel, and ongoing operation.

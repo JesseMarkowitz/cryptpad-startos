@@ -291,6 +291,22 @@ Note the failure mode when a user is at the *wrong* origin, because it is mislea
 
 This is the **only** health check. An earlier iteration of this package had four extras (`admin`, `checkup`, `sandbox-security`, `onlyoffice`) — once `/api/config` returns 200 they all turn green and add no diagnostic value. If you need deeper inspection, use the **Run Diagnostics** action.
 
+## Not an Upgrade Path from the 0.3.x CryptPad Package
+
+**This package is a fresh install. It does not migrate data from the StartOS 0.3.x CryptPad service, and must not be presented as if it does.**
+
+The retired package (`Start9Labs/cryptpad-startos`, still in 0.3.x `manifest.yaml` format) wraps **CryptPad 5.2.1** and stores data across **six separate volumes** — `main`, `blob`, `block`, `customize`, `data`, `datastore`, mounted under `/cryptpad/`. This package wraps a 2026 CryptPad release and uses **one** `main` volume with subdirectories under `/data`. Nothing maps across automatically, and the upstream gap is roughly four years of data-format history.
+
+Three specific hazards:
+
+1. **`canMigrateFrom` cannot be narrowed.** It is derived from the version graph, and `other: []` yields `<=current` — the widest possible range (`versions.md`, "canMigrateFrom Is Derived, Not Curated"). Because `5.2.1` sorts below this package's version, StartOS will regard this as a valid upgrade and run our `up` migration, **which is empty**. There is no supported way to make the platform refuse.
+2. **Volume-name collision.** The old package also had a volume named `main`, holding CryptPad 5.2.1's `/cryptpad/main` contents — not the `store.json` / `datastore/` layout this package expects.
+3. **Unverified.** Nobody has run this path on a real 0.3.5.1 → 0.4.0 migrated server. Treat it as unsupported rather than assuming a particular failure mode.
+
+**Guidance for anyone coming from the old package:** export your pads from the running 0.3.x instance first (CryptPad's own drive export), then install this as a new service and re-import. Do not expect an in-place upgrade to carry documents over.
+
+This is the same shape of problem StartOS's own [0.4.0 update guide](https://docs.start9.com/) calls out for Ghost and Synapse under "Services with special handling", and CryptPad arguably belongs on that list — see `TODO.md`.
+
 ## Known Limitation: the Sandbox Iframe and the Root CA
 
 The two-origin design has a consequence that is easy to miss and looks like a broken package: **the sandbox origin needs a trusted certificate, and the browser will not let the user click through to get one.**
