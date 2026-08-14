@@ -2,6 +2,62 @@
 
 Live worklist. Remove items as they're finished; add items when work is deferred.
 
+## Alpha testing — v2026.5.1_0 (released 2026-08-10)
+
+Released from commit `0ed28ba`, tag `v2026.5.1_0`.
+Asset: `cryptpad_x86_64.s9pk`, sha256 `4f52abf463da5f37bf3307eee772e52039a737fea5d3e444660d142cd5fe1dbc`.
+**x86_64 only** — aarch64 builds green on CI but was not shipped.
+
+### Repo state that is NOT visible in the files
+
+- **All three GitHub Actions workflows are disabled at the *settings* level**, not in the
+  workflow files (`gh workflow list --all` shows `disabled_manually`). The files are kept
+  deliberately: when Start9 forks this into `Start9-Community`, their pipeline needs them and
+  runs them with their org secrets. Don't "fix" a non-running CI by editing `.github/`.
+- **The repo has no Actions secrets.** The `DEV_KEY` secret was deleted 2026-08-14. If CI is ever
+  re-enabled here, the shared build workflow falls through to `start-cli init-key` and signs with
+  a throwaway key that differs run-to-run. To restore the previous behaviour, re-upload the
+  *identity* key (a different key from the workspace `build.key.pem` that signs local builds):
+  `gh secret set DEV_KEY -R JesseMarkowitz/cryptpad-startos < ~/.startos/id.key.pem`.
+- **The aarch64 artifact from CI run 31250455537 expires ~2026-08-22** (14-day retention). After
+  that, producing an arm binary means re-enabling the Build workflow and dispatching it, or
+  installing `qemu-aarch64` binfmt locally.
+
+### What testers were told
+
+Interpreting their reports depends on knowing this. The release notes told them to:
+
+1. **Trust the server's Root CA before installing.** Expect this to be the single most common
+   report anyway — a fresh install looks broken without it, and the error names a port the user
+   never typed. First question on any "documents don't render" report: did they trust the CA, or
+   only click through the warning on the main URL?
+2. **Export their drive first if coming from CryptPad on StartOS 0.3.x** — this is not an
+   upgrade path.
+3. Restore takes tens of minutes; both URL tasks re-fire after a restore; CryptPad answers only
+   on the Main URL; `/checkup/` reports 51/55 by design.
+
+### Feedback log
+
+Record what testers actually hit, so the next release is driven by evidence rather than guesswork.
+
+- **2026-08-14 — alpha testing closed with no issues to fix.** Testers reported no defects
+  against `v2026.5.1_0`. None of the "likely first questions" below came back as an actual
+  report, so they remain predictions, not observed behaviour — keep them as support notes rather
+  than treating them as validated.
+
+### Likely first questions, with answers already established
+
+- *"Documents won't open / certificate error on a port I didn't type"* → Root CA not trusted.
+  Browsers do not offer certificate exceptions for iframes. See README, "the Sandbox Iframe and
+  the Root CA".
+- *"Login says invalid username or password but I know it's right"* → they are on a non-Main
+  origin. `customSalt()` falls back to `''` when the page has not initialised for this instance,
+  deriving different keys. Not an account problem.
+- *"The launch button opens the wrong address"* → known; `launchableAddress` has no knowledge of
+  `store.mainUrl`. Mitigation is in `instructions.md`.
+- *"Restore has hung"* → it has not; ~42 minutes for a near-empty instance is expected and is an
+  upstream StartOS issue, not this package.
+
 ## Blocking release
 
 - [x] ~~Run the manual test checklist in `NextSteps.md`~~ — **complete. All 18 items pass.**
@@ -17,9 +73,8 @@ Live worklist. Remove items as they're finished; add items when work is deferred
       unpacking. Moved to the upstream section below. No package change warranted; the README and
       `instructions.md` tell users to expect a slow restore without blaming a cause.
 
-- [ ] **Final commit.** The tree has been iterated on dirty throughout testing, as intended.
-      One clean commit once the maintainer is satisfied; `git reset --soft HEAD~N` to collapse
-      any fixups.
+- [x] ~~Final commit~~ — done. Two commits (`03275e6` the migration + fixes, `0ed28ba` the
+      documentation from testing), tagged `v2026.5.1_0` and released.
 
 ## Verified locally
 
@@ -76,9 +131,20 @@ Live worklist. Remove items as they're finished; add items when work is deferred
       and Node 22 strips types natively. `npm test` runs it. Fixtures are synthetic; never paste
       values from a live instance, since an install token grants first-admin creation.
 
-## Needs a decision before community submission
+- [x] **Keep the `5.2.1` version numbers in `README.md`.** Decided 2026-08-14. `writing-readmes.md`
+      says no specific version numbers, but the rule exists because version references go stale —
+      and these three are frozen history about the retired 0.3.x package, not a claim about this
+      one. Removing them makes the upgrade-hazard warning vague. If a community reviewer flags
+      them on ctrl-F, the answer is the sentence above; `instructions.md` keeps the numberless
+      phrasing for end users.
 
-- [ ] **Raise the 0.3.x upgrade path with Start9 in the submission email.** The retired
+## Community submission
+
+- [ ] **Open the community PR and send the submission email.** Both decisions below are settled;
+      this is the remaining action.
+
+- [ ] **Include the 0.3.x upgrade path in the submission email.** Decided 2026-08-14: raise it
+      with Start9 there rather than solving it in the package. The retired
       `Start9Labs/cryptpad-startos` (0.3.x `manifest.yaml`, CryptPad 5.2.1, six volumes: main,
       blob, block, customize, data, datastore) has no 0.4.0 successor, and this package cannot
       serve as one — different volume layout, ~4 years of upstream data-format drift, and an
@@ -92,6 +158,9 @@ Live worklist. Remove items as they're finished; add items when work is deferred
       specific failure mode without testing it.
 
 ## Upstream (StartOS platform, not this package)
+
+These are raised separately from the community submission (issues/PRs against
+`Start9Labs/start-technologies`) and none of them block this package.
 
 - [ ] **Restore is ~40x slower than a fresh install of the same package.** Measured on x86_64
       StartOS 0.4.0.1: fresh install of the 480 MB CryptPad `.s9pk` **< 1 minute**; restore of a
@@ -139,13 +208,15 @@ Live worklist. Remove items as they're finished; add items when work is deferred
 
 ## Deferred
 
-- [ ] **Bump to start-sdk 2.0.10 once it publishes to npm.** Currently pinned to 2.0.9, matching
+- [ ] **Bump to start-sdk 2.0.10 once it publishes to npm.** Deferred by decision 2026-08-14;
+      re-checked that day and npm still shows 2.0.9 as latest. Currently pinned to 2.0.9, matching
       the rest of the Start9 fleet (lnd, cln, jitsi, bitcoin-core, mempool, btcpayserver,
       vaultwarden, ghost, home-assistant, nextcloud, ollama are all on 2.0.9). 2.0.10 exists in
       the monorepo but returns E404 on npm; its only substantive change is moving the default
       manifest `osVersion` floor from `0.4.0-beta.10` to `0.4.0`.
-- [ ] `PLAN-v1.md` is retained as a historical design document. Once the checklist passes and
-      the package ships, consider whether it still earns its place in the repo.
+- [x] ~~`PLAN-v1.md` retained as a historical design document~~ — **removed 2026-08-14.** The
+      package shipped and the checklist passed, so the v1 design doc no longer earned its place in
+      a repo a community reviewer reads. Recoverable from git history if ever needed.
 
 ## Known expected behavior (not bugs — documented in README)
 
