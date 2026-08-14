@@ -192,8 +192,8 @@ Once any `ADD_ADMIN_KEY` decree appears in the log (i.e., the wizard has complet
 
 Manages the `adminKeys` array written into `config.js`. Each row in the list accepts either:
 
-- a bare CryptPad public signing key (e.g. `CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=`), copied from CryptPad → Settings → Account → Public Signing Key
-- the full profile-link format (e.g. `[username@instance.example.com/CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=]`) — the action extracts the bare key from the link
+- a bare CryptPad public signing key (e.g. `CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=`)
+- the full profile format (e.g. `[username@instance.example.com/CU6kIC-J4zPUqkXuWcxCApSvT4JkhpfBNbf13Mz+Vg4=]`) — the action extracts the bare key from the full profile. This can be copied from CryptPad → Settings → Account → Public Signing Key
 
 **Validation mirrors upstream `Keys.canonicalize`** (`src/common/common-signing-keys.js`): a key is exactly **44 characters** (43 base64 chars + `=`), and `-` is accepted as the escaped form of `/` — profile links escape `/` so the key survives embedding. The stored value is always the unescaped, canonical form, matching what CryptPad's own `Env.admins` holds. There is **no `_`** in this alphabet; upstream neither produces nor accepts base64url `_`.
 
@@ -291,7 +291,22 @@ Note the failure mode when a user is at the *wrong* origin, because it is mislea
 
 This is the **only** health check. An earlier iteration of this package had four extras (`admin`, `checkup`, `sandbox-security`, `onlyoffice`) — once `/api/config` returns 200 they all turn green and add no diagnostic value. If you need deeper inspection, use the **Run Diagnostics** action.
 
-## Not an Upgrade Path from the 0.3.x CryptPad Package
+## Dependencies
+
+None.
+
+## Limitations and Differences
+
+1. **No email integration.** CryptPad has no built-in SMTP support in any current release; account flows are end-to-end encrypted and local. The "support help-desk" feature uses CryptPad's own E2E-encrypted in-app messaging, not email. There is no StartOS SMTP action because there is nothing on the CryptPad side that would consume credentials. If a future CryptPad release adds SMTP, this package will revisit. (Upstream issue [#1047](https://github.com/cryptpad/cryptpad/issues/1047) tracks the open feature request.)
+2. **Two URLs are required.** Without two distinct hostnames (different origins), CryptPad cannot start. Users on a single-domain setup will need to either provision a second hostname (e.g., a private domain in StartOS, or a Tor service) or configure the sandbox URL on the same hostname with a different subdomain prefix.
+3. **`loginSalt` is set once and never changed.** Per upstream documentation, changing the login salt invalidates every existing user's password hash. The package writes it on first install and the file-existence guard in init prevents regeneration. Restoring a backup preserves the salt.
+4. **`adminKeys` in `config.js` is one of two admin lists.** CryptPad's in-app `/admin/` panel maintains its own admin list internally; StartOS-managed `adminKeys` and in-app admins persist independently. The intended workflow is: use the install-token URL to create the first admin (wizard adds them in-app); use the StartOS action only for emergencies (lost access, no other admin available) or bulk operations.
+5. **No HSTS headers.** HSTS is controlled by StartOS at the TLS-termination edge; service packages cannot configure it. Confirmed against the StartOS source: `Strict-Transport-Security` appears nowhere in the codebase, and the hardening headers the OS does apply (`add_security_headers` in `shared-libs/crates/start-core/src/net/static_server.rs`) set CSP and `X-Content-Type-Options` on StartOS UI-origin responses only. CryptPad's `/checkup/` **test 54** reports this — it does not affect functionality, and no package-side change can resolve it. Adding HSTS to the OS reverse proxy would be a platform-level improvement (see `TODO.md`).
+6. **`x86_64` and `aarch64` only.** The upstream image does not publish `riscv64`.
+7. **Single-node only.** Multi-node clustered CryptPad setups are not supported by this package.
+8. **2FA recovery, password resets, support help-desk auto-init, public directory listing** — all live in the in-app `/admin/` panel; not exposed as StartOS actions.
+
+## Known Limitation: Not an Upgrade Path from the 0.3.x CryptPad Package
 
 **This package is a fresh install. It does not migrate data from the StartOS 0.3.x CryptPad service, and must not be presented as if it does.**
 
@@ -335,29 +350,8 @@ Mitigation is documented in `instructions.md`: use the Main URL directly, or dis
 
 Established sessions are unaffected by an origin change until reloaded — the WebSocket reconnects and edits continue to save. The rejection is a page-load check, not a per-request one. Confirmed in v1 testing (checklist #15).
 
-## Resource Usage
 
-Measured on x86_64 with `start-cli package stats`, after a session covering collaborative editing, file upload/download, and OnlyOffice document/spreadsheet/presentation editing:
-
-| Metric | Value |
-|---|---|
-| Steady-state memory | ~364 MiB |
-| Peak memory | ~543 MiB (systemd `memory peak`, reported on container teardown) |
-| Image size | ~480 MiB packed `.s9pk` (upstream image + ~210 MiB baked OnlyOffice) |
-
-For scale, on the same box `bitcoind` sits at ~754 MiB.
-
-**No `hardwareRequirements.ram` is declared**, matching every other Start9 package (nextcloud, bitcoind, jitsi, mempool and vaultwarden all declare none). The figures above are for capacity planning, not an enforced floor.
-
-Note that **OnlyOffice editing is client-side** — the editor JavaScript and the x2t WASM converter run in the user's browser, so opening documents costs the browser, not the server. Server memory tracks concurrent WebSocket sessions, active pads held in memory, and the history-keeper.
-
-To measure on a live install:
-
-```bash
-start-cli package stats          # all services, current usage against the slice cap
-```
-
-## Expected Log Noise
+## Known Limitation: Expected Log Noise
 
 Three recurring log patterns are normal and should not be investigated as faults.
 
@@ -375,21 +369,6 @@ The OnlyOffice bundle probes for optional files that CryptPad's trimmed distribu
 **2. `Error while fetching URL: http://localhost:3000/api/config` + `ECONNREFUSED` at startup.** The `ready` health check polls once per second before the daemon binds its port. The upstream entrypoint runs `npm run build` on every container start (regenerating ~25 `www/*/index.html` files) before `node server.js`, so there is a several-second window where the port is closed. Expect a handful of these on every start; they stop the moment the server binds. The stack trace comes from `checkWebUrl` itself and cannot be suppressed from the package — `gracePeriod` governs the reported *status*, not the logging.
 
 **3. `HK_GET_OLDER_HISTORY` with an all-zeros channel id.** History-keeper chatter, logged at `ERROR` by upstream but benign.
-
-## Dependencies
-
-None.
-
-## Limitations and Differences
-
-1. **No email integration.** CryptPad has no built-in SMTP support in any current release; account flows are end-to-end encrypted and local. The "support help-desk" feature uses CryptPad's own E2E-encrypted in-app messaging, not email. There is no StartOS SMTP action because there is nothing on the CryptPad side that would consume credentials. If a future CryptPad release adds SMTP, this package will revisit. (Upstream issue [#1047](https://github.com/cryptpad/cryptpad/issues/1047) tracks the open feature request.)
-2. **Two URLs are required.** Without two distinct hostnames (different origins), CryptPad cannot start. Users on a single-domain setup will need to either provision a second hostname (e.g., a private domain in StartOS, or a Tor service) or configure the sandbox URL on the same hostname with a different subdomain prefix.
-3. **`loginSalt` is set once and never changed.** Per upstream documentation, changing the login salt invalidates every existing user's password hash. The package writes it on first install and the file-existence guard in init prevents regeneration. Restoring a backup preserves the salt.
-4. **`adminKeys` in `config.js` is one of two admin lists.** CryptPad's in-app `/admin/` panel maintains its own admin list internally; StartOS-managed `adminKeys` and in-app admins persist independently. The intended workflow is: use the install-token URL to create the first admin (wizard adds them in-app); use the StartOS action only for emergencies (lost access, no other admin available) or bulk operations.
-5. **No HSTS headers.** HSTS is controlled by StartOS at the TLS-termination edge; service packages cannot configure it. Confirmed against the StartOS source: `Strict-Transport-Security` appears nowhere in the codebase, and the hardening headers the OS does apply (`add_security_headers` in `shared-libs/crates/start-core/src/net/static_server.rs`) set CSP and `X-Content-Type-Options` on StartOS UI-origin responses only. CryptPad's `/checkup/` **test 54** reports this — it does not affect functionality, and no package-side change can resolve it. Adding HSTS to the OS reverse proxy would be a platform-level improvement (see `TODO.md`).
-6. **`x86_64` and `aarch64` only.** The upstream image does not publish `riscv64`.
-7. **Single-node only.** Multi-node clustered CryptPad setups are not supported by this package.
-8. **2FA recovery, password resets, support help-desk auto-init, public directory listing** — all live in the in-app `/admin/` panel; not exposed as StartOS actions.
 
 ## What Is Unchanged from Upstream
 
